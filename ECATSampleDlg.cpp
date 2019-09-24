@@ -945,10 +945,6 @@ void CECATSampleDlg::AppInit()
 	GetDlgItem(IDC_STATIC_TEST)->SetWindowTextW(_T(IDC_STATIC_TEST_SHOW_TEXT));
 	GetDlgItem(IDC_BUTTON_TEST)->SetWindowTextW(_T(IDC_BUTTON_TEST_SHOW_TEXT));
 
-	GetDlgItem(IDC_STATIC_PLATFORM)->SetWindowTextW(_T(IDC_STATIC_PLATFORM_SHOW_TEXT));
-	GetDlgItem(IDC_STATIC_SWITCH_STATUS)->SetWindowTextW(_T(IDC_STATIC_SWITCH_STATUS_SHOW_TEXT));
-	GetDlgItem(IDC_STATIC_POLE_LENGTH)->SetWindowTextW(_T(IDC_STATIC_POLE_LENGTH_SHOW_TEXT));
-
 	GetDlgItem(IDC_STATIC_APP_STATUS)->SetWindowTextW(_T(CORPORATION_NAME));
 	GetDlgItem(IDC_STATIC_APP_TITLE)->SetWindowTextW(_T(APP_TITLE));
 	CFont* font = new CFont();
@@ -1933,13 +1929,11 @@ void CECATSampleDlg::OnBnClickedButtonGenerate()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CDIALOGGenerate * dlg = new CDIALOGGenerate(this);
-		dlg->DoModal();
-		dlg->Create(IDD_GENERATE, this);
-		dlg->ShowWindow(SW_SHOW);
-		delete dlg;
+	dlg->DoModal();
+	dlg->Create(IDD_GENERATE, this);
+	dlg->ShowWindow(SW_SHOW);
+	delete dlg;
 		
-//OnBnClickedOk();
-
 }
 
 //路谱处理
@@ -1947,10 +1941,10 @@ void CECATSampleDlg::OnBnClickedButtonProcessing()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CDIALOGProcessing * dlg = new CDIALOGProcessing(this);
-		dlg->DoModal();
-		dlg->Create(IDD_PROCESSING, this);
-		dlg->ShowWindow(SW_SHOW);
-		delete dlg;
+	dlg->DoModal();
+	dlg->Create(IDD_PROCESSING, this);
+	dlg->ShowWindow(SW_SHOW);
+	delete dlg;
 }
 
 
@@ -1958,8 +1952,8 @@ void CECATSampleDlg::OnBnClickedButtonReproduce()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CDIALOGReproduce * dlg = new CDIALOGReproduce(this);
-		dlg->DoModal();
-		dlg->Create(IDD_REPRODUCE, this);
-		dlg->ShowWindow(SW_SHOW);
-		delete dlg;
+	dlg->DoModal();
+	dlg->Create(IDD_REPRODUCE, this);
+	dlg->ShowWindow(SW_SHOW);
+	delete dlg;
 }
