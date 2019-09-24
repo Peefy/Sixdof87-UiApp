@@ -37,7 +37,6 @@ public:
 	afx_msg void OnBnClickedButton3();
 	CString m_FileName;
 	afx_msg void OnBnClickedButton1();
-	CString m_test;
 	BOOL m_Radio1;
 	BOOL m_Radio4;
 	BOOL m_Radio7;

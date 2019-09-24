@@ -43,9 +43,9 @@ public:
 
 	#define dMax0 10
 	#define dMin0 1
-	#define dMax1 30
-	#define dMin1 10
-	#define dMax2 10
+	#define dMax1 20
+	#define dMin1 0
+	#define dMax2 20
 	#define dMin2 0
 	#define RowNum 2
 	#define ColNum 3

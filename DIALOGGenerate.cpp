@@ -33,7 +33,6 @@ CDIALOGGenerate::CDIALOGGenerate(CWnd* pParent /*=NULL*/)
 	
 	, m_chSaveDir()
 	, m_FileName(_T(DefaultFileName))
-	, m_test(_T(""))
 	, m_Radio1(FALSE)
 	, m_Radio4(FALSE)
 	, m_Radio7(FALSE)
@@ -71,7 +70,6 @@ void CDIALOGGenerate::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxDouble(pDX, m_dNum5, fMin, fMax);
 	DDX_Text(pDX, IDC_EDIT2, m_chSaveDir);
 	DDX_Text(pDX, IDC_EDIT3, m_FileName);
-	DDX_Text(pDX, IDC_EDIT13, m_test);
 	DDX_Radio(pDX, IDC_RADIO1, m_Radio1);
 	DDX_Radio(pDX, IDC_RADIO4, m_Radio4);
 	DDX_Radio(pDX, IDC_RADIO7, m_Radio7);
