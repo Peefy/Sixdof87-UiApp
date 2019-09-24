@@ -31,7 +31,7 @@ CDIALOGGenerate::CDIALOGGenerate(CWnd* pParent /*=NULL*/)
 	, m_dNum4(0)
 	, m_dNum5(0)
 	
-	, m_chSaveDir()
+	, m_chSaveDir(_T(""))
 	, m_FileName(_T(DefaultFileName))
 	, m_Radio1(FALSE)
 	, m_Radio4(FALSE)
