@@ -24,7 +24,7 @@ IMPLEMENT_DYNAMIC(DialogRegister, CDialogEx)
 DialogRegister::DialogRegister(CWnd* pParent /*=NULL*/)
 	: CDialogEx(DialogRegister::IDD, pParent)
 {
-	
+	int i = 0;
 }
 
 DialogRegister::~DialogRegister()

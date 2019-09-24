@@ -56,7 +56,7 @@ void CDIALOGLogin::OnBnClickedOk()
 	}
 	else
 	{
-		MessageBox(_T("账户或密码错误！"));
+		MessageBox(_T("账户或密码错误"));
 	}
 
 	// TODO: 在此添加控件通知处理程序代码
