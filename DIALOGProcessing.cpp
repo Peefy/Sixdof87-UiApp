@@ -10,9 +10,10 @@
 
 using namespace std;
 
-double SourceBuf[RowNum][3] = {0.0};
-double TargetBuf[RowNum][3] = {0.0};
-// CDIALOGProcessing 对话框
+#define MAX_PROCESS_LINE 5
+
+double SourceBuf[RowNum][ColNum] = {{0.0}};
+double TargetBuf[RowNum][ColNum] = {{0.0}};
 
 IMPLEMENT_DYNAMIC(CDIALOGProcessing, CDialogEx)
 
@@ -172,7 +173,7 @@ void CDIALOGProcessing::OnBnClickedButton2()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	m_SourceHistoryPath = "";												//文件选择清空
-	CString defaultDir = _T("C:\\Users\\w\\Desktop\\六自由度台\\filetest"); //默认打开的文件路径
+	CString defaultDir = _T("C:\\filetest"); //默认打开的文件路径
 	CString defaultFile = L"test.txt";										//默认打开的文件名
 	CFileDialog dlg(TRUE, _T("txt"), defaultDir + "\\" + defaultFile, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("数据文件|*.txt||"));
 	if (dlg.DoModal() == IDOK)
@@ -206,11 +207,11 @@ void CDIALOGProcessing::OnBnClickedButton3()
 	bi.lParam = 0;
 	bi.iImage = 0;
 	ITEMIDLIST *pidl = ::SHBrowseForFolder(&bi); //显示弹出窗口，ITEMIDLIST很重要
-	if (::SHGetPathFromIDList(pidl, dirBuff))	//在ITEMIDLIST中得到目录名的整个路径
+	if (::SHGetPathFromIDList(pidl, dirBuff))	 //在ITEMIDLIST中得到目录名的整个路径
 	{
 		//成功
 		m_TargetDir = dirBuff;
-		SetCurrentDirectory(m_TargetDir); // 设置到选定的目录
+		//SetCurrentDirectory(m_TargetDir); // 设置到选定的目录
 		UpdateData(false);				  // 写控件
 	}
 }
@@ -221,7 +222,7 @@ void CDIALOGProcessing::OnBnClickedButton1()
 	// TODO: 在此添加控件通知处理程序代码
 	ReadFile(); //读源谱到SourceBuf
 	//路谱处理
-	Processing();
+	TestProcessing();
 
 	WriteFile(); //将TargetBuf写到目标路谱文件target.data中
 }
@@ -232,18 +233,21 @@ void CDIALOGProcessing::ReadFile()
 
 	ifstream fin(m_SourcePath);		//打开文件流对象
 	double *ptr = &SourceBuf[0][0]; //定义
+	int i = 0;
 	if (!fin.is_open())
 	{
 		MessageBox(_T("未找到文件!"));
 		return;
 	}
-	while (!fin.eof())
+	while (!fin.eof() && i < MAX_PROCESS_LINE * ColNum)
 	{
 		fin >> *ptr; //这个是把文档里面的数对应在ptr位置的数值上
 		ptr++;
+		i++;
 	}
 	fin.close();
 }
+
 //写入目标路谱文件target.data////////////////////////////////////////待改???
 void CDIALOGProcessing::WriteFile()
 {
@@ -253,10 +257,11 @@ void CDIALOGProcessing::WriteFile()
 	//CString TargetFileName=_T("\\target.txt");
 	ofstream fout(m_TargetDir + "\\" + TargetFileName);
 
+	ASSERT(MAX_PROCESS_LINE < RowNum);
 	if (fout.is_open())
 	{
 		double *ptr = &TargetBuf[0][0]; //定义
-		for (int i = 0; i < RowNum; i++)
+		for (int i = 0; i < MAX_PROCESS_LINE; i++)
 		{
 			for (int j = 0; j < ColNum - 1; j++)
 			{
@@ -279,9 +284,21 @@ void CDIALOGProcessing::WriteFile()
 //路谱处理函数
 void CDIALOGProcessing::Processing()
 {
-
-	//不处理
+	//不处理 建议修改为memcpy，时间复杂度O(1)
 	for (int i = 0; i < RowNum; i++)
+	{
+		for (int j = 0; j < ColNum; j++)
+		{
+			TargetBuf[i][j] = SourceBuf[i][j];
+		}
+	}
+}
+
+void CDIALOGProcessing::TestProcessing()
+{
+	//不处理 建议修改为memcpy，时间复杂度O(1)
+	ASSERT(MAX_PROCESS_LINE < RowNum);
+	for (int i = 0; i < MAX_PROCESS_LINE; i++)
 	{
 		for (int j = 0; j < ColNum; j++)
 		{

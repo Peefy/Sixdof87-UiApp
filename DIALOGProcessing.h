@@ -3,6 +3,16 @@
 
 // CDIALOGProcessing �Ի���
 
+#define dMax0 10
+#define dMin0 1
+#define dMax1 20
+#define dMin1 0
+#define dMax2 20
+#define dMin2 0
+#define RowNum 1000
+#define ColNum 18
+#define TargetNum 100
+
 class CDIALOGProcessing : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDIALOGProcessing)
@@ -39,20 +49,8 @@ public:
 	CString m_TargetDir;
 	afx_msg void OnBnClickedButton1();
 	CString m_SourcePath;
-	void CDIALOGProcessing::ReadFile();
-	void CDIALOGProcessing::WriteFile();
-	void CDIALOGProcessing::Processing();
-
-#define dMax0 10
-#define dMin0 1
-#define dMax1 20
-#define dMin1 0
-#define dMax2 20
-#define dMin2 0
-#define RowNum 2
-#define ColNum 3
-#define TargetNum 100
-	double SourceBuf[RowNum][ColNum]; //������������� ����Ҫ�� array �����static����
-									  //��ΪĬ�ϵĶ�ջ��С�������������Էŵ���̬�洢��
-	double TargetBuf[RowNum][ColNum];
+	void ReadFile();
+	void WriteFile();
+	void Processing();
+	void TestProcessing();
 };
