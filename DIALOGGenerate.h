@@ -1,21 +1,23 @@
 #pragma once
 
-
-// CDIALOGGenerate ¶Ô»°¿ò
+// CDIALOGGenerate ï¿½Ô»ï¿½ï¿½ï¿½
 
 class CDIALOGGenerate : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDIALOGGenerate)
 
 public:
-	CDIALOGGenerate(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êý
+	CDIALOGGenerate(CWnd *pParent = NULL); // ï¿½ï¿½×¼ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 	virtual ~CDIALOGGenerate();
 
-// ¶Ô»°¿òÊý¾Ý
-	enum { IDD = IDD_GENERATE };
+	// ï¿½Ô»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	enum
+	{
+		IDD = IDD_GENERATE
+	};
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV Ö§ï¿½ï¿½
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -25,7 +27,7 @@ public:
 	double m_dNum2;
 	double m_dNum3;
 	double m_dNum4;
-	double m_dNum5;	
+	double m_dNum5;
 	afx_msg void OnDeltaposSpin3(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpin4(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpin5(NMHDR *pNMHDR, LRESULT *pResult);

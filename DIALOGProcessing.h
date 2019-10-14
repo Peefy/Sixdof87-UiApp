@@ -1,22 +1,24 @@
 #pragma once
 #include "afxwin.h"
 
-
-// CDIALOGProcessing ¶Ô»°¿ò
+// CDIALOGProcessing ï¿½Ô»ï¿½ï¿½ï¿½
 
 class CDIALOGProcessing : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDIALOGProcessing)
 
 public:
-	CDIALOGProcessing(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êý
+	CDIALOGProcessing(CWnd *pParent = NULL); // ï¿½ï¿½×¼ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 	virtual ~CDIALOGProcessing();
 
-// ¶Ô»°¿òÊý¾Ý
-	enum { IDD = IDD_PROCESSING };
+	// ï¿½Ô»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	enum
+	{
+		IDD = IDD_PROCESSING
+	};
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV Ö§ï¿½ï¿½
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -24,33 +26,33 @@ public:
 	CComboBox m_combo1;
 	CComboBox m_combo2;
 	CComboBox m_combo3;
-    afx_msg void OnCbnSelchangeCombo1();
-    int m_dNum0;
+	afx_msg void OnCbnSelchangeCombo1();
+	int m_dNum0;
 	double m_dNum1;
 	double m_dNum2;
 	afx_msg void OnDeltaposSpin1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpin3(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpin5(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton2();
-	CString m_SourceHistoryPath;//Æ×Ô´ÎÄ¼þÂ·¾¶
+	CString m_SourceHistoryPath; //ï¿½ï¿½Ô´ï¿½Ä¼ï¿½Â·ï¿½ï¿½
 	afx_msg void OnBnClickedButton3();
 	CString m_TargetDir;
 	afx_msg void OnBnClickedButton1();
 	CString m_SourcePath;
 	void CDIALOGProcessing::ReadFile();
 	void CDIALOGProcessing::WriteFile();
-   void CDIALOGProcessing::Processing();
+	void CDIALOGProcessing::Processing();
 
-	#define dMax0 10
-	#define dMin0 1
-	#define dMax1 20
-	#define dMin1 0
-	#define dMax2 20
-	#define dMin2 0
-	#define RowNum 2
-	#define ColNum 3
-	#define TargetNum 100
-	double SourceBuf[RowNum][ColNum];//Èç¹ûÊý¾ÝÁ¿¹ý´ó ÔòÐèÒª°Ñ array ¶¨Òå³ÉstaticÀàÐÍ
-	 //ÒòÎªÄ¬ÈÏµÄ¶ÑÕ»´óÐ¡ÈÝÁ¿²»¹»£¬¿ÉÒÔ·Åµ½¾²Ì¬´æ´¢Çø  
+#define dMax0 10
+#define dMin0 1
+#define dMax1 20
+#define dMin1 0
+#define dMax2 20
+#define dMin2 0
+#define RowNum 2
+#define ColNum 3
+#define TargetNum 100
+	double SourceBuf[RowNum][ColNum]; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ array ï¿½ï¿½ï¿½ï¿½ï¿½staticï¿½ï¿½ï¿½ï¿½
+									  //ï¿½ï¿½ÎªÄ¬ï¿½ÏµÄ¶ï¿½Õ»ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô·Åµï¿½ï¿½ï¿½Ì¬ï¿½æ´¢ï¿½ï¿½
 	double TargetBuf[RowNum][ColNum];
 };

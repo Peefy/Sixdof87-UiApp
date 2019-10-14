@@ -1,27 +1,29 @@
 #pragma once
 
-
-// CDIALOGLogin ¶Ô»°¿ò
+// CDIALOGLogin ï¿½Ô»ï¿½ï¿½ï¿½
 
 class CDIALOGLogin : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDIALOGLogin)
 
 public:
-	CDIALOGLogin(CWnd* pParent = NULL);   // ±ê×¼¹¹Ôìº¯Êý
+	CDIALOGLogin(CWnd *pParent = NULL); // ï¿½ï¿½×¼ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½
 	virtual ~CDIALOGLogin();
 
-// ¶Ô»°¿òÊý¾Ý
-	enum { IDD = IDD_LOGIN };
+	// ï¿½Ô»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	enum
+	{
+		IDD = IDD_LOGIN
+	};
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV Ö§³Ö
+	virtual void DoDataExchange(CDataExchange *pDX); // DDX/DDV Ö§ï¿½ï¿½
 
 	DECLARE_MESSAGE_MAP()
 public:
 	CString m_EditUsername;
 	CString m_EditPassword;
 	afx_msg void OnBnClickedOk();
-	static int user_FLAG;//0¡ª¡ªµÇÂ¼Ê§°Ü, 1¡ª¡ª¹ÜÀíÔ±admin£¬2¡ª¡ªÊÔÑéÔ±test
+	static int user_FLAG; //0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼Ê§ï¿½ï¿½, 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±adminï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±test
 	afx_msg void OnBnClickedCancel();
 };

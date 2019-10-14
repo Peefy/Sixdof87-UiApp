@@ -1947,7 +1947,7 @@ void CECATSampleDlg::OnBnClickedButtonProcessing()
 	delete dlg;
 }
 
-
+// 路谱复现
 void CECATSampleDlg::OnBnClickedButtonReproduce()
 {
 	// TODO: 在此添加控件通知处理程序代码
