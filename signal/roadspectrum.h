@@ -4,9 +4,13 @@
 
 #include <queue>
 #include <vector>
+#include <memory>
 #include <string>
 
 using namespace std;
+
+namespace Signal
+{
 
 struct SixdofData
 {
@@ -82,9 +86,9 @@ public:
 	queue<RoadSpectrumData> DataBuffer;
 	int OperateMode;
 private:
-
+	
 };
 
-
+}
 
 #endif
