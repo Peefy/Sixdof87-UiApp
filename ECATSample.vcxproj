@@ -181,7 +181,6 @@
     <ClCompile Include="DIALOGProcessing.cpp" />
     <ClCompile Include="DialogRegister.cpp" />
     <ClCompile Include="DIALOGReproduce.cpp" />
-    <ClCompile Include="DialogSignalRun.cpp" />
     <ClCompile Include="ECATSample.cpp" />
     <ClCompile Include="ECATSampleDlg.cpp" />
     <ClCompile Include="json\json_reader.cpp" />
@@ -262,7 +261,6 @@
     <ClInclude Include="DIALOGProcessing.h" />
     <ClInclude Include="DialogRegister.h" />
     <ClInclude Include="DIALOGReproduce.h" />
-    <ClInclude Include="DialogSignalRun.h" />
     <ClInclude Include="ECATSample.h" />
     <ClInclude Include="ECATSampleDlg.h" />
     <ClInclude Include="EtherCAT_DLL.h" />

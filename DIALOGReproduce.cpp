@@ -76,7 +76,7 @@ void CDIALOGReproduce::OnBnClickedButton3() //“复现运行”
 	//DataFromFile();
 }
 
-double SourceBuf[DATA_COL_NUM];
+static double sourceBuf[DATA_COL_NUM] = {0};
 
 void CDIALOGReproduce::DataFromFile()
 {
@@ -86,7 +86,7 @@ void CDIALOGReproduce::DataFromFile()
 	}
 
 	ifstream fin(m_TargetPath);		//打开文件流对象
-	double *ptr = &SourceBuf[0]; //定义
+	double *ptr = &sourceBuf[0]; //定义
 	int readcount = 0;
 	int arrcount = 0;
 	if (!fin.is_open())
@@ -104,7 +104,7 @@ void CDIALOGReproduce::DataFromFile()
 		{
 			arrcount = 0;
 			//RoadSpectrum->DataBuffer.push(Signal::RoadSpectrumData::FromArray(SourceBuf));
-			ptr = &SourceBuf[0];
+			ptr = &sourceBuf[0];
 		}
 	}
 	fin.close();

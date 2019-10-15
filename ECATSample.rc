@@ -195,13 +195,6 @@ BEGIN
     PUSHBUTTON      "Ñ¡ÔñÎÄ¼þ",IDC_BUTTON2,301,65,42,14
 END
 
-IDD_SIGNAL DIALOGEX 0, 0, 289, 135
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -249,14 +242,6 @@ BEGIN
         RIGHTMARGIN, 359
         TOPMARGIN, 7
         BOTTOMMARGIN, 138
-    END
-
-    IDD_SIGNAL, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 282
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 128
     END
 END
 #endif    // APSTUDIO_INVOKED

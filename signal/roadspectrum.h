@@ -3,6 +3,7 @@
 #define __ROAD_SPECTRUM_H
 
 #include <queue>
+#include <deque>
 #include <vector>
 #include <memory>
 #include <string>
@@ -26,6 +27,16 @@ struct SixdofData
 	long double Roll;
 	//µ¥Î»1¶È
 	long double Pitch;
+
+	SixdofData()
+	{
+		X = 0;
+		Y = 0;
+		Z = 0;
+		Yaw = 0;
+		Roll = 0;
+		Pitch = 0;
+	}
 
 	string ToString()
 	{
@@ -89,7 +100,7 @@ class RoadSpectrum
 public:
 	RoadSpectrum();
 	virtual ~RoadSpectrum();
-	queue<RoadSpectrumData> DataBuffer;
+	deque<RoadSpectrumData> DataBuffer;
 	int OperateMode;
 private:
 	

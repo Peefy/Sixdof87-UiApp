@@ -14,7 +14,6 @@
 #include "DIALOGGenerate.h"
 #include "DIALOGProcessing.h"
 #include "DIALOGReproduce.h"
-#include "DialogSignalRun.h"
 
 #include "EtherCAT_DLL.h"
 #include "EtherCAT_DLL_Err.h"
@@ -65,7 +64,7 @@ using namespace std;
 #define SIXDOF_CONTROL_DELEY     40
 #define SCENE_THREAD_DELAY       1000
 #define SENSOR_THREAD_DELAY      1000
-#define DATA_BUFFER_THREAD_DELAY 20
+#define DATA_BUFFER_THREAD_DELAY 1000
 
 #define DDA_UP_COUNT    400
 #define DDA_ONCE_COUNT  100
@@ -78,6 +77,9 @@ using namespace std;
 
 #define PATH_DATA_USE_DDA 0
 #define IS_USE_MESSAGEBOX 1
+
+#define MAX_REPRODUCE_LINE 1000
+#define DATA_COL_NUM       18
 
 bool enableShock = ENABLE_SHOCK;
 bool enableChirp = ENABLE_CHIRP;
@@ -112,25 +114,25 @@ SixDofPlatformStatus lastStartStatus = SIXDOF_STATUS_BOTTOM;
 
 #if PATH_DATA_USE_DDA
 
-MovingAverageFilterType rollFiter = {120, 1.0};
-MovingAverageFilterType yawFiter = {10, 1.0};
-MovingAverageFilterType pitchFiter = {40, 1.3};
+MovingAverageFilterType rollFiter = {2, 1};
+MovingAverageFilterType yawFiter = {2, 1};
+MovingAverageFilterType pitchFiter = {2, 1};
 
-MovingAverageFilterType xFiter = {20, 1.0};
-MovingAverageFilterType yFiter = {20, 1.0};
-MovingAverageFilterType zFiter = {20, 3.0};
+MovingAverageFilterType xFiter = {2, 1};
+MovingAverageFilterType yFiter = {2, 1};
+MovingAverageFilterType zFiter = {2, 1};
 double ShockVal = 0.1;
 double ShockHz = 8.0;
 
 #else
 
-MovingAverageFilterType rollFiter = {12, 0.08};
-MovingAverageFilterType yawFiter = {12, 0.08};
-MovingAverageFilterType pitchFiter = {12, -0.08};
+MovingAverageFilterType rollFiter = {2, 1};
+MovingAverageFilterType yawFiter = {2, 1};
+MovingAverageFilterType pitchFiter = {2, 1};
 
-MovingAverageFilterType xFiter = {8, 0.01};
-MovingAverageFilterType yFiter = {8, 0.01};
-MovingAverageFilterType zFiter = {8, 0.01};
+MovingAverageFilterType xFiter = {2, 1};
+MovingAverageFilterType yFiter = {2, 1};
+MovingAverageFilterType zFiter = {2, 1};
 double ShockVal = 1.0;
 double ShockHz = 188.0;
 
@@ -180,7 +182,7 @@ double chartRollValPoint[CHART_POINT_NUM] = { 0 };
 double chartPitchValPoint[CHART_POINT_NUM] = { 0 };
 double chartYawValPoint[CHART_POINT_NUM] = { 0 };
 
-double runTime = 0;
+int runTime = 0;
 double chartTime = 0;
 double controltime = 0;
 double dataChartTime = 0;
@@ -213,7 +215,6 @@ DWORD WINAPI SensorInfoThread(LPVOID pParam)
 {
 	while (true)
 	{
-		SensorRead();
 		Sleep(SENSOR_THREAD_DELAY);
 	}
 	return 0;
@@ -264,22 +265,6 @@ void CECATSampleDlg::JudgeControlCommand()
 
 void VisionDataDeal()
 {	
-	EnterCriticalSection(&cs);
-	vision.RenewData();	
-#if IS_USE_KALMAN_FILTER 1
-	vision.X = kalman1_filter(&kalman_xFilter, vision.X);
-	vision.Y = kalman1_filter(&kalman_yFilter, vision.Y);
-	vision.Z = kalman1_filter(&kalman_zFilter, vision.Z);
-	vision.Roll = kalman1_filter(&kalman_rollFilter, vision.Roll);
-	vision.Pitch = kalman1_filter(&kalman_pitchFilter, vision.Pitch);
-	vision.Yaw = kalman1_filter(&kalman_yawFilter, vision.Yaw);
-#endif
-	LeaveCriticalSection(&cs);
-	if (vision.IsRecievedData == false)
-		return;
-	EnterCriticalSection(&ctrlCommandLockobj);
-	visionCtrlComand = vision.GetControlCommand();
-	LeaveCriticalSection(&ctrlCommandLockobj);
 
 }
 
@@ -296,10 +281,6 @@ DWORD WINAPI DataBufferInfoThread(LPVOID pParam)
 {
 	while (true)
 	{
-		EnterCriticalSection(&cs);
-		vision.SendData(false, status, data.X / 10.0, data.Y / 10.0, 
-			data.Z / 10.0, data.Roll / 100.0, data.Yaw / 100.0, data.Pitch / 100.0);	
-		LeaveCriticalSection(&cs);
 		Sleep(DATA_BUFFER_THREAD_DELAY);
 	}
 	return 0;
@@ -373,6 +354,13 @@ void SensorRead()
 {
 	Sleep(SENSOR_THREAD_DELAY);
 }
+
+double vision_x = 0;
+double vision_y = 0;
+double vision_z = 0;
+double vision_roll = 0;
+double vision_pitch = 0;
+double vision_yaw = 0;
 
 void SixdofControl()
 {
@@ -533,13 +521,16 @@ void SixdofControl()
 						else
 						{
 							EnterCriticalSection(&cs);
-							auto vision_x = vision.X;
-							auto vision_y = vision.Y;
-							auto vision_z = vision.Z;
-							auto vision_roll = vision.Roll;
-							auto vision_pitch = vision.Pitch;
-							auto vision_yaw = vision.Yaw;
-							vision.SetPoseAngle(vision_roll, vision_pitch, vision_yaw);
+							if (roadSpectrum.DataBuffer.size() > 0) {
+								auto roaddata = roadSpectrum.DataBuffer.front();
+								roadSpectrum.DataBuffer.pop_front();
+								vision_x = roaddata.Position.X;
+								vision_y = roaddata.Position.Y;
+								vision_z = roaddata.Position.Z;
+								vision_roll = roaddata.Position.Roll;
+								vision_pitch = roaddata.Position.Pitch;
+								vision_yaw = roaddata.Position.Yaw;
+							}
 							LeaveCriticalSection(&cs);
 							double pi = 3.1415926;
 							double shockVal = ShockVal;
@@ -1951,13 +1942,63 @@ void CECATSampleDlg::OnBnClickedButtonProcessing()
 	delete dlg;
 }
 
+double SourceBuf[DATA_COL_NUM] = {0};
+
 // 路谱复现
 void CECATSampleDlg::OnBnClickedButtonReproduce()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	CDialogSignalRun * dlg = new CDialogSignalRun(this);
-	dlg->DoModal();
-	dlg->Create(IDD_SIGNAL, this);
-	dlg->ShowWindow(SW_SHOW);
-	delete dlg;
+#if _DEBUG
+#else
+	if (status != SIXDOF_STATUS_READY)
+	{
+#if IS_USE_MESSAGEBOX
+		MessageBox(_T(SIXDOF_NOT_BEGIN_MESSAGE));
+#endif
+		return;
+	}
+#endif
+
+	CString targetHistoryPath = "";
+	CString defaultDir = L"C:\\";  //默认打开的文件路径
+	CString defaultFile = L"test.txt"; //默认打开的文件名
+	CFileDialog dlg(TRUE, _T("txt"), defaultDir + "\\" + defaultFile, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("数据文件|*.txt||"));
+	if (dlg.DoModal() == IDOK)
+	{
+		targetHistoryPath = dlg.GetPathName();
+		if (targetHistoryPath == "")
+		{
+			MessageBox(_T("未选择文件！"));
+			return;
+		}
+	}
+
+	ifstream fin(targetHistoryPath);		
+	double *ptr = &SourceBuf[0]; 
+	int readcount = 0;
+	int arrcount = 0;
+	if (!fin.is_open())
+	{
+		AfxMessageBox(_T("未找到文件!"));
+		return;
+	}
+	roadSpectrum.DataBuffer.clear();
+	while (!fin.eof() && readcount < MAX_REPRODUCE_LINE * DATA_COL_NUM)
+	{
+		fin >> *ptr; 
+		ptr++;
+		readcount++;
+		arrcount++;
+		if (arrcount >= DATA_COL_NUM)
+		{
+			arrcount = 0;
+			roadSpectrum.DataBuffer.push_back(Signal::RoadSpectrumData::FromArray(SourceBuf));
+			ptr = &SourceBuf[0];
+		}
+	}
+	fin.close();
+	Sleep(20);
+#if _DEBUG
+	status = SIXDOF_STATUS_READY;
+#endif
+	OnBnClickedBtnStart();
 }

@@ -279,10 +279,10 @@ void CDIALOGGenerate::OnBnClickedButton3() //“生成随机文件”按钮
 	}
 	//SetCurrentDirectory(m_chSaveDir); //设置到默认的目录m_chSaveDir
 	GetDlgItemText(IDC_EDIT3, m_FileName);
-	double Time = 2;
+	double Time = 5;
 	double t = 0;
-	double delta_t = 0.001;
-	double fx = 1, fy = 2, fz = 3, fyaw = 1, frow = 1, fpitch = 1;
+	double delta_t = 0.025;
+	double fx = 0, fy = 0, fz = 0, fyaw = 1, frow = 1, fpitch = 1;
 	double x = 0, y = 0, z = 0, yaw = 0, row = 0, pitch = 0, dx, dy, dz, dyaw, drow, dpitch, ddx, ddy, ddz, ddyaw, ddrow, ddpitch;
 
 	//复选框radio button：“路谱定义”——4组：m_Radio1,4,7,10（选中状态用0，1，2，3表示）；“强度”——m_Radio8，17

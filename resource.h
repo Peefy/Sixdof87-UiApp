@@ -10,7 +10,6 @@
 #define IDD_GENERATE                    132
 #define IDD_PROCESSING                  133
 #define IDD_REPRODUCE                   134
-#define IDD_SIGNAL                      139
 #define IDC_BTN_InitialCard             1000
 #define IDC_BTN_FindSlave               1001
 #define IDC_CBO_CardNo                  1002
