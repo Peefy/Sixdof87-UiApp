@@ -1,8 +1,19 @@
 #pragma once
 
+#include <queue>
+
+#include "communication/sixdof.h"
+
+using namespace std;
+
+typedef enum 
+{
+	None = 0,
+	SimulationTest = 1,
+	RecurringRun = 2
+}ReproduceMode;
 
 // CDIALOGReproduce ¶Ô»°¿ò
-
 class CDIALOGReproduce : public CDialogEx
 {
 	DECLARE_DYNAMIC(CDIALOGReproduce)
@@ -27,4 +38,9 @@ public:
 	CEdit m_Time;
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton3();
+
+public:
+	ReproduceMode Mode;
+	queue<SixdofPackage> DataBuffer;
+	void DataFromFile();
 };

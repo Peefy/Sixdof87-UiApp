@@ -296,13 +296,8 @@ void CDIALOGProcessing::Processing()
 
 void CDIALOGProcessing::TestProcessing()
 {
-	//不处理 建议修改为memcpy，时间复杂度O(1)
-	ASSERT(MAX_PROCESS_LINE < RowNum);
-	for (int i = 0; i < MAX_PROCESS_LINE; i++)
-	{
-		for (int j = 0; j < ColNum; j++)
-		{
-			TargetBuf[i][j] = SourceBuf[i][j];
-		}
-	}
+	// 断言
+	ASSERT(MAX_PROCESS_LINE < RowNum); 
+	// 内存拷贝
+	memmove(TargetBuf, SourceBuf, sizeof(double) * MAX_PROCESS_LINE * ColNum); 
 }

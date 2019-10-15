@@ -109,7 +109,7 @@ typedef enum
 
 extern char * SixDofStatusText[];
 
-typedef struct 
+struct SixdofPackage
 {
 	//单位1mm
 	double X;
@@ -123,7 +123,11 @@ typedef struct
 	double Roll;
 	//单位1度
 	double Pitch;
-}SixdofPackage;
+	SixdofPackage(double x, double y, double z, 
+		double yaw, double roll, double pitch) : X(x), Y(y), Z(z), Yaw(yaw), Roll(roll), Pitch(pitch) {}
+	SixdofPackage() {}
+	virtual ~SixdofPackage() {}
+};
 
 class SixDof
 {

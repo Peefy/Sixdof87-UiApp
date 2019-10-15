@@ -9,6 +9,9 @@
 
 // CDIALOGReproduce 对话框
 
+#define MAX_REPRODUCE_LINE 20
+#define DATA_COL_NUM       18
+
 IMPLEMENT_DYNAMIC(CDIALOGReproduce, CDialogEx)
 
 CDIALOGReproduce::CDIALOGReproduce(CWnd *pParent /*=NULL*/)
@@ -58,10 +61,23 @@ void CDIALOGReproduce::OnBnClickedButton2() //"选择文件"
 
 void CDIALOGReproduce::OnBnClickedButton1() //“模拟测试”
 {
-	// TODO: 在此添加控件通知处理程序代码
+	DataFromFile();
+	Mode = SimulationTest;
 }
 
 void CDIALOGReproduce::OnBnClickedButton3() //“复现运行”
 {
-	// TODO: 在此添加控件通知处理程序代码
+	DataFromFile();
+	Mode = RecurringRun;
+}
+
+void CDIALOGReproduce::DataFromFile()
+{
+	if (m_TargetPath == "") {
+		AfxMessageBox(_T("未选择文件"));
+		return;
+	}
+	for (int i = 0;i < MAX_REPRODUCE_LINE;++i) {
+		DataBuffer.push(SixdofPackage(0, 0, 0, 0, 0, 0));
+	}
 }
