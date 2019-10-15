@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by ECATSample.rc
+// Microsoft Visual C++ 生成的包含文件。
+// 供 ECATSample.rc 使用
 //
 #define IDD_ECATSAMPLE_DIALOG           102
 #define IDR_MAINFRAME                   128
@@ -10,6 +10,7 @@
 #define IDD_GENERATE                    132
 #define IDD_PROCESSING                  133
 #define IDD_REPRODUCE                   134
+#define IDD_SIGNAL                      139
 #define IDC_BTN_InitialCard             1000
 #define IDC_BTN_FindSlave               1001
 #define IDC_CBO_CardNo                  1002
@@ -206,7 +207,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1123
 #define _APS_NEXT_SYMED_VALUE           101

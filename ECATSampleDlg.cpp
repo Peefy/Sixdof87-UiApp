@@ -14,6 +14,7 @@
 #include "DIALOGGenerate.h"
 #include "DIALOGProcessing.h"
 #include "DIALOGReproduce.h"
+#include "DialogSignalRun.h"
 
 #include "EtherCAT_DLL.h"
 #include "EtherCAT_DLL_Err.h"
@@ -36,6 +37,8 @@
 
 #include "util/mytime.h"
 #include "util/model.h"
+
+#include "signal/roadspectrum.h"
 
 #include "register/register.h"
 
@@ -190,11 +193,12 @@ bool isCsp = false;
 U16 Counter = 0;
 
 int visionCtrlComand = 0;
-queue<int> commandBuffer;
 
 // 线程锁
 CRITICAL_SECTION cs;
 CRITICAL_SECTION ctrlCommandLockobj;
+
+Signal::RoadSpectrum roadSpectrum;
 
 DWORD WINAPI DataTransThread(LPVOID pParam)
 {
@@ -1927,13 +1931,13 @@ void CECATSampleDlg::OnBnClickedButtonStopTest()
 //路谱生成
 void CECATSampleDlg::OnBnClickedButtonGenerate()
 {
+
 	// TODO: 在此添加控件通知处理程序代码
 	CDIALOGGenerate * dlg = new CDIALOGGenerate(this);
 	dlg->DoModal();
 	dlg->Create(IDD_GENERATE, this);
 	dlg->ShowWindow(SW_SHOW);
-	delete dlg;
-		
+	delete dlg;	
 }
 
 //路谱处理
@@ -1951,9 +1955,9 @@ void CECATSampleDlg::OnBnClickedButtonProcessing()
 void CECATSampleDlg::OnBnClickedButtonReproduce()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	CDIALOGReproduce * dlg = new CDIALOGReproduce(this);
+	CDialogSignalRun * dlg = new CDialogSignalRun(this);
 	dlg->DoModal();
-	dlg->Create(IDD_REPRODUCE, this);
+	dlg->Create(IDD_SIGNAL, this);
 	dlg->ShowWindow(SW_SHOW);
 	delete dlg;
 }

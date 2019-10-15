@@ -1,18 +1,8 @@
 #pragma once
 
-#include <queue>
 
-#include "communication/sixdof.h"
-#include "signal/roadspectrum.h"
 
 using namespace std;
-
-typedef enum 
-{
-	None = 0,
-	SimulationTest = 1,
-	RecurringRun = 2
-}ReproduceMode;
 
 // CDIALOGReproduce 对话框
 class CDIALOGReproduce : public CDialogEx
@@ -20,7 +10,7 @@ class CDIALOGReproduce : public CDialogEx
 	DECLARE_DYNAMIC(CDIALOGReproduce)
 
 public:
-	CDIALOGReproduce(CWnd* pParent = NULL);   // 标准构造函数
+	CDIALOGReproduce(CWnd* pParent = NULL); 
 	virtual ~CDIALOGReproduce();
 
 // 对话框数据
@@ -39,9 +29,11 @@ public:
 	CEdit m_Time;
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton3();
-
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedButton4();
 public:
-	ReproduceMode Mode;
-	queue<SixdofPackage> DataBuffer;
+	//Signal::RoadSpectrum* RoadSpectrum;
 	void DataFromFile();
+
 };
