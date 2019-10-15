@@ -225,6 +225,9 @@
     <ClCompile Include="signal\signal.cpp">
       <Filter>signal</Filter>
     </ClCompile>
+    <ClCompile Include="signal\roadspectrum.cpp">
+      <Filter>signal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ECATSample.rc">
@@ -494,6 +497,9 @@
       <Filter>signal</Filter>
     </ClInclude>
     <ClInclude Include="signal\signal.h">
+      <Filter>signal</Filter>
+    </ClInclude>
+    <ClInclude Include="signal\roadspectrum.h">
       <Filter>signal</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,6 +3,7 @@
 #include <queue>
 
 #include "communication/sixdof.h"
+#include "signal/roadspectrum.h"
 
 using namespace std;
 

@@ -191,6 +191,7 @@
     <ClCompile Include="register\MD5.cpp" />
     <ClCompile Include="register\register.cpp" />
     <ClCompile Include="signal\filter.cpp" />
+    <ClCompile Include="signal\roadspectrum.cpp" />
     <ClCompile Include="signal\signal.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -287,6 +288,7 @@
     <ClInclude Include="register\register.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="signal\filter.h" />
+    <ClInclude Include="signal\roadspectrum.h" />
     <ClInclude Include="signal\signal.h" />
     <ClInclude Include="Sixdofdll2010.h" />
     <ClInclude Include="StdAfx.h" />
