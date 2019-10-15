@@ -88,6 +88,7 @@ public:
 	void AppConfigInit();
 	void RunTestMode();
 	void RunJudgeRangeTestMode();
+	void DataFromFile();
 	double GetCEditNumber(int cEditId);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedBtnConnect();
@@ -103,6 +104,7 @@ public:
 	afx_msg void OnBnClickedButtonGenerate();
 	afx_msg void OnBnClickedButtonProcessing();
 	afx_msg void OnBnClickedButtonReproduce();
+	afx_msg void OnBnClickedButtonData();
 };
 
 //{{AFX_INSERT_LOCATION}}

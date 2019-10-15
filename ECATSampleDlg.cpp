@@ -531,6 +531,15 @@ void SixdofControl()
 								vision_pitch = roaddata.Position.Pitch;
 								vision_yaw = roaddata.Position.Yaw;
 							}
+							else {			
+								if (status != SIXDOF_STATUS_RUN) {
+									sin_time_pulse = 0;
+									t = 0;
+									dataChartTime = 0;
+									closeDataThread = true;
+									isStart = false;	
+								}
+							}
 							LeaveCriticalSection(&cs);
 							double pi = 3.1415926;
 							double shockVal = ShockVal;
@@ -558,16 +567,17 @@ void SixdofControl()
 							data.Roll = (int16_t)(roll * 100);
 							data.Pitch = (int16_t)(pitch * 100);
 							data.Yaw = (int16_t)(yaw * 100);
-
+							if (status == SIXDOF_STATUS_RUN)
+							{
 #if PATH_DATA_USE_DDA
-							t += 0.00095;
-							delta.SetDDAData(dis);
+								t += 0.00095;
+								delta.SetDDAData(dis);
 #else
-							t += 0.01;
-							delta.Csp(dis);
+								t += 0.01;
+								delta.Csp(dis);
 #endif
+							}
 						}
-
 					}
 				}
 			}
@@ -680,6 +690,7 @@ BEGIN_MESSAGE_MAP(CECATSampleDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_GENERATE, &CECATSampleDlg::OnBnClickedButtonGenerate)
 	ON_BN_CLICKED(IDC_BUTTON_PROCESSING, &CECATSampleDlg::OnBnClickedButtonProcessing)
 	ON_BN_CLICKED(IDC_BUTTON_REPRODUCE, &CECATSampleDlg::OnBnClickedButtonReproduce)
+	ON_BN_CLICKED(IDC_BUTTON_DATA, &CECATSampleDlg::OnBnClickedButtonData)
 END_MESSAGE_MAP()
 
 void CECATSampleDlg::AppConfigInit()
@@ -1944,20 +1955,8 @@ void CECATSampleDlg::OnBnClickedButtonProcessing()
 
 double SourceBuf[DATA_COL_NUM] = {0};
 
-// 路谱复现
-void CECATSampleDlg::OnBnClickedButtonReproduce()
+void CECATSampleDlg::DataFromFile()
 {
-#if _DEBUG
-#else
-	if (status != SIXDOF_STATUS_READY)
-	{
-#if IS_USE_MESSAGEBOX
-		MessageBox(_T(SIXDOF_NOT_BEGIN_MESSAGE));
-#endif
-		return;
-	}
-#endif
-
 	CString targetHistoryPath = "";
 	CString defaultDir = L"C:\\";  //默认打开的文件路径
 	CString defaultFile = L"test.txt"; //默认打开的文件名
@@ -1996,9 +1995,37 @@ void CECATSampleDlg::OnBnClickedButtonReproduce()
 		}
 	}
 	fin.close();
+}
+
+// 路谱复现
+void CECATSampleDlg::OnBnClickedButtonReproduce()
+{
+#if _DEBUG
+#else
+	if (status != SIXDOF_STATUS_READY)
+	{
+#if IS_USE_MESSAGEBOX
+		MessageBox(_T(SIXDOF_NOT_BEGIN_MESSAGE));
+#endif
+		return;
+	}
+#endif
+	DataFromFile();
 	Sleep(20);
 #if _DEBUG
 	status = SIXDOF_STATUS_READY;
 #endif
 	OnBnClickedBtnStart();
+}
+
+
+void CECATSampleDlg::OnBnClickedButtonData()
+{
+	DataFromFile();
+	isTest = false;
+	sin_time_pulse = 0;
+	t = 0;
+	dataChartTime = 0;
+	closeDataThread = false;
+	isStart = true;	
 }
