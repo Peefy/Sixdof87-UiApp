@@ -517,7 +517,7 @@ void SixdofControl()
 								t -= 0.00095;
 							}
 						}
-						// 视景姿态模拟运动
+						// 路谱
 						else
 						{
 							EnterCriticalSection(&cs);

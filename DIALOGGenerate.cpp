@@ -255,17 +255,9 @@ void CDIALOGGenerate::OnBnClickedButton5() //“选择目录”按钮
 	ITEMIDLIST *pidl = ::SHBrowseForFolder(&bi); //显示弹出窗口，ITEMIDLIST很重要
 	if (::SHGetPathFromIDList(pidl, dirBuff))	//在ITEMIDLIST中得到目录名的整个路径
 	{
-		//成功
 		m_chSaveDir = dirBuff;
-		//SetCurrentDirectory(m_chSaveDir);                                // 设置到选定的目录
-		//theApp.WriteProfileStringW(_T(WORKER_PARAM),_T(TENEMENT_DIR),m_chSaveDir);        // 写注册表？？？
-		UpdateData(false); // 写控件
+		UpdateData(false); 
 	}
-	//FineNodeList();                                                // 刷新文件浏览？？？
-
-	/*	AfxGetApp()->WriteProfileString(_T("GenerateDlg"),_T("OpenDir"),m_chSaveDir);
-	AfxGetApp()->GetProfileString(_T("GenerateDlg"),_T("OpenDir"),m_chSaveDir );
-	*/
 }
 
 void CDIALOGGenerate::OnBnClickedButton3() //“生成随机文件”按钮
@@ -281,10 +273,15 @@ void CDIALOGGenerate::OnBnClickedButton3() //“生成随机文件”按钮
 	GetDlgItemText(IDC_EDIT3, m_FileName);
 	double Time = 5;
 	double t = 0;
-	double delta_t = 0.025;
-	double fx = 0, fy = 0, fz = 0, fyaw = 1, frow = 1, fpitch = 1;
-	double x = 0, y = 0, z = 0, yaw = 0, row = 0, pitch = 0, dx, dy, dz, dyaw, drow, dpitch, ddx, ddy, ddz, ddyaw, ddrow, ddpitch;
-
+	double delta_t = 0.02;
+	double fx = 0, fy = 0, fz = 0, fyaw = 0.2, froll = 0.3, fpitch = 0.5;
+	double x = 0, y = 0, z = 0, yaw = 0, roll = 0, pitch = 0, dx, dy, dz, dyaw, droll, dpitch, ddx, ddy, ddz, ddyaw, ddroll, ddpitch;
+	double xval = 0;
+	double yval = 0;
+	double zval = 0;
+	double rollval = 5;
+	double yawval = 3;
+	double pitchval = 4;
 	//复选框radio button：“路谱定义”——4组：m_Radio1,4,7,10（选中状态用0，1，2，3表示）；“强度”——m_Radio8，17
 	//UpdateData(TRUE);
 	//CString m_R1;
@@ -303,26 +300,26 @@ void CDIALOGGenerate::OnBnClickedButton3() //“生成随机文件”按钮
 			x = sin(2 * pi * fx * t);
 			y = sin(2 * pi * fy * t);
 			z = sin(2 * pi * fz * t);
-			yaw = sin(2 * pi * fyaw * t);
-			row = sin(2 * pi * frow * t);
-			pitch = sin(2 * pi * fpitch * t);
+			yaw = sin(2 * pi * fyaw * t) * yawval;
+			roll = sin(2 * pi * froll * t) * rollval;
+			pitch = sin(2 * pi * fpitch * t) * pitchval;
 			t += delta_t;
 
 			dx = (sin(2 * pi * fx * t) - x) / delta_t;
 			dy = (sin(2 * pi * fy * t) - y) / delta_t;
 			dz = (sin(2 * pi * fz * t) - z) / delta_t;
 			dyaw = (sin(2 * pi * fyaw * t) - yaw) / delta_t;
-			drow = (sin(2 * pi * frow * t) - row) / delta_t;
+			droll = (sin(2 * pi * froll * t) - roll) / delta_t;
 			dpitch = (sin(2 * pi * fpitch * t) - pitch) / delta_t;
 
 			ddx = sin(2 * pi * fx * (t + delta_t)) - sin(2 * pi * fx * t) - dx;
 			ddy = sin(2 * pi * fy * (t + delta_t)) - sin(2 * pi * fy * t) - dy;
 			ddz = sin(2 * pi * fz * (t + delta_t)) - sin(2 * pi * fz * t) - dz;
 			ddyaw = sin(2 * pi * fyaw * (t + delta_t)) - sin(2 * pi * fyaw * t) - dyaw;
-			ddrow = sin(2 * pi * frow * (t + delta_t)) - sin(2 * pi * frow * t) - drow;
+			ddroll = sin(2 * pi * froll * (t + delta_t)) - sin(2 * pi * froll * t) - droll;
 			ddpitch = sin(2 * pi * fpitch * (t + delta_t)) - sin(2 * pi * fpitch * t) - dpitch;
 
-			fout << x << " " << y << " " << z << " " << yaw << " " << row << " " << pitch << " " << dx << " " << dy << " " << dz << " " << dyaw << " " << drow << " " << dpitch << " " << ddx << " " << ddy << " " << ddz << " " << ddyaw << " " << ddrow << " " << ddpitch << endl;
+			fout << x << " " << y << " " << z << " " << yaw << " " << roll << " " << pitch << " " << dx << " " << dy << " " << dz << " " << dyaw << " " << droll << " " << dpitch << " " << ddx << " " << ddy << " " << ddz << " " << ddyaw << " " << ddroll << " " << ddpitch << endl;
 		}
 		fout.flush();
 		fout.close();

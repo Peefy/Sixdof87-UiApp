@@ -228,6 +228,12 @@
     <ClCompile Include="signal\roadspectrum.cpp">
       <Filter>signal</Filter>
     </ClCompile>
+    <ClCompile Include="signal\noise.cpp">
+      <Filter>signal</Filter>
+    </ClCompile>
+    <ClCompile Include="signal\wavegenerator.cpp">
+      <Filter>signal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ECATSample.rc">
@@ -500,6 +506,12 @@
       <Filter>signal</Filter>
     </ClInclude>
     <ClInclude Include="signal\roadspectrum.h">
+      <Filter>signal</Filter>
+    </ClInclude>
+    <ClInclude Include="signal\noise.h">
+      <Filter>signal</Filter>
+    </ClInclude>
+    <ClInclude Include="signal\wavegenerator.h">
       <Filter>signal</Filter>
     </ClInclude>
   </ItemGroup>
