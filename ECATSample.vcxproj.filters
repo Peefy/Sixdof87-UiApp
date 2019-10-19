@@ -234,6 +234,9 @@
     <ClCompile Include="signal\wavegenerator.cpp">
       <Filter>signal</Filter>
     </ClCompile>
+    <ClCompile Include="control\modbus_dataapdapter.cpp">
+      <Filter>control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ECATSample.rc">
@@ -513,6 +516,9 @@
     </ClInclude>
     <ClInclude Include="signal\wavegenerator.h">
       <Filter>signal</Filter>
+    </ClInclude>
+    <ClInclude Include="control\modbus_dataapdapter.h">
+      <Filter>control</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

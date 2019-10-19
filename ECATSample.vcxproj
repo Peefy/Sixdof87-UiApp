@@ -171,6 +171,7 @@
     <ClCompile Include="control\JY901.cpp" />
     <ClCompile Include="control\kalman_filter.cpp" />
     <ClCompile Include="control\landvision.cpp" />
+    <ClCompile Include="control\modbus_dataapdapter.cpp" />
     <ClCompile Include="control\pid.cpp" />
     <ClCompile Include="control\sensor.cpp" />
     <ClCompile Include="control\udp.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="control\JY901.h" />
     <ClInclude Include="control\kalman_filter.h" />
     <ClInclude Include="control\landvision.h" />
+    <ClInclude Include="control\modbus_dataapdapter.h" />
     <ClInclude Include="control\pid.h" />
     <ClInclude Include="control\sensor.h" />
     <ClInclude Include="control\udp.h" />

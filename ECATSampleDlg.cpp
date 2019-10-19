@@ -29,6 +29,7 @@
 #include "control/pid.h"
 #include "control/kalman_filter.h"
 #include "control/illusion.h"
+#include "control/modbus_dataapdapter.h"
 
 #include "config/recordpath.h"
 
@@ -55,6 +56,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 using namespace std;
+using namespace SixdofModbus;
 
 #define COLOR_RED     RGB(255, 123, 123)
 #define COLOR_GREEN   RGB(123, 255, 123)
