@@ -63,10 +63,10 @@ using namespace SixdofModbus;
 
 #define TIMER_MS 10
 
-#define SIXDOF_CONTROL_DELEY     40
+#define SIXDOF_CONTROL_DELEY     20
 #define SCENE_THREAD_DELAY       1000
 #define SENSOR_THREAD_DELAY      1000
-#define DATA_BUFFER_THREAD_DELAY 1000
+#define DATA_BUFFER_THREAD_DELAY 20
 
 #define DDA_UP_COUNT    400
 #define DDA_ONCE_COUNT  100
@@ -144,16 +144,6 @@ double hpfAngleSpdWn = 0.2;
 
 #endif
 
-#define IS_USE_KALMAN_FILTER 0
-kalman1_state kalman_rollFilter;
-kalman1_state kalman_yawFilter;
-kalman1_state kalman_pitchFilter;
-kalman1_state kalman_xFilter;
-kalman1_state kalman_yFilter;
-kalman1_state kalman_zFilter;
-
-double controlOut[FREEDOM_NUM];
-
 CChartCtrl m_ChartCtrl1; 
 CChartLineSerie *pLineSerie1;
 CChartLineSerie *pLineSerie2;
@@ -202,7 +192,10 @@ int visionCtrlComand = 0;
 CRITICAL_SECTION cs;
 CRITICAL_SECTION ctrlCommandLockobj;
 
+// 控制PLC
 Signal::RoadSpectrum roadSpectrum;
+SixdofModbus::ModbusPackage sendData;
+SixdofModbus::ControlCommandEnum sendStatus = CONTROL_COMMAND_NONE;
 
 DWORD WINAPI DataTransThread(LPVOID pParam)
 {
@@ -283,6 +276,7 @@ DWORD WINAPI DataBufferInfoThread(LPVOID pParam)
 {
 	while (true)
 	{
+		// modbus poll
 		Sleep(DATA_BUFFER_THREAD_DELAY);
 	}
 	return 0;
@@ -768,12 +762,7 @@ void CECATSampleDlg::AppConfigInit()
 
 void CECATSampleDlg::KalmanFilterInit()
 {
-	kalman1_init(&kalman_rollFilter, 0, 0.01);
-	kalman1_init(&kalman_yawFilter, 0, 0.01);
-	kalman1_init(&kalman_pitchFilter, 0, 0.01);
-	kalman1_init(&kalman_xFilter, 0, 0.01);
-	kalman1_init(&kalman_yFilter, 0, 0.01);
-	kalman1_init(&kalman_zFilter, 0, 0.01);
+
 }
 
 void CECATSampleDlg::ChartInit()
@@ -1440,6 +1429,7 @@ void CECATSampleDlg::OnBnClickedBtnRise()
 	delta.ReadAllSwitchStatus();
 	Sleep(50);
 	status = SIXDOF_STATUS_ISRISING;	
+	sendStatus = CONTROL_COMMAND_RISING;
 	delta.ResetStatus();
 	delta.Rise();
 	Sleep(50);
@@ -1470,6 +1460,7 @@ void CECATSampleDlg::OnBnClickedBtnMiddle()
 		}
 	}
 	status = SIXDOF_STATUS_READY;
+	sendStatus = CONTROL_COMMAND_STOP;
 	delta.MoveToZeroPulseNumber();
 }
 
@@ -1488,7 +1479,8 @@ void CECATSampleDlg::OnBnClickedBtnStart()
 #else
 #endif
 	status = SIXDOF_STATUS_RUN;
-	Sleep(100);
+	sendStatus = CONTROL_COMMAND_START_SIGNAL;
+	//Sleep(100);
 	delta.RenewNowPulse();
 	delta.ResetStatus();
 	delta.GetMotionAveragePulse();
@@ -1518,6 +1510,7 @@ void CECATSampleDlg::OnCommandStopme()
 	Sleep(100);
 	delta.MoveToZeroPulseNumber();
 	status = SIXDOF_STATUS_READY;
+	sendStatus = CONTROL_COMMAND_STOP;
 	ResetDefaultData(&data);
 }
 
@@ -1526,11 +1519,11 @@ void CECATSampleDlg::OnBnClickedBtnStopme()
 	stopSCurve = true;
 	if (closeDataThread == false){
 		//等待DDA数据运动完毕
-		Sleep(2000); 
+		//Sleep(2000); 
 	}
 	closeDataThread = true;
 	delta.ServoStop();
-	Sleep(100);
+	//Sleep(100);
 	delta.DisableDDA();
 	delta.ServoAllOnOff(true);
 	if (status == SIXDOF_STATUS_RUN)
@@ -1545,6 +1538,7 @@ void CECATSampleDlg::OnBnClickedBtnStopme()
 			status = SIXDOF_STATUS_MIDDLE;
 		}
 	}
+	sendStatus = CONTROL_COMMAND_STOP;
 	ResetDefaultData(&data);
 }
 
@@ -1593,6 +1587,7 @@ void CECATSampleDlg::OnBnClickedBtnDown()
 	delta.ServoStop();
 	Sleep(100);
 	status = SIXDOF_STATUS_ISFALLING;
+	sendStatus = CONTROL_COMMAND_DOWN;
 	delta.DownUsingHomeMode();
 }
 
@@ -1716,7 +1711,7 @@ void CECATSampleDlg::RunTestMode()
 		delta.EnableDDA();
 	}
 	delta.ServoStop();
-	Sleep(100);
+	//Sleep(100);
 	delta.RenewNowPulse();
 	delta.ResetStatus();
 	delta.GetMotionAveragePulse();
@@ -1880,13 +1875,8 @@ void CECATSampleDlg::RunJudgeRangeTestMode()
 	isCsp = false;
 	if (isCsp == false)
 	{
-		delta.EnableDDA();
+
 	}
-	delta.ServoStop();
-	Sleep(100);
-	delta.RenewNowPulse();
-	delta.ResetStatus();
-	delta.GetMotionAveragePulse();
 	isTest = true;
 	t = 0;
 	dataChartTime = 0;
@@ -1910,6 +1900,7 @@ void CECATSampleDlg::OnBnClickedButtonTest()
 		return;
 	}
 	status = SIXDOF_STATUS_RUN;
+	sendStatus = CONTROL_COMMAND_START_SINE;
 	RunJudgeRangeTestMode();
 }
 
@@ -2019,7 +2010,6 @@ void CECATSampleDlg::OnBnClickedButtonReproduce()
 #endif
 	OnBnClickedBtnStart();
 }
-
 
 void CECATSampleDlg::OnBnClickedButtonData()
 {

@@ -16,9 +16,10 @@ using namespace std;
 #define fMax 20.00
 #define fMin 0.00
 #define DefaultFileName "Generate_RoadSpectrum.txt"
-//#define DefaultFilePath "C:\\Users\\w\\Desktop\\六自由度台\\filetest"
 
-// CDIALOGGenerate 对话框
+#include "signal/wavegenerator.h"
+
+Signal::WaveGenerator waveGenerator;
 
 IMPLEMENT_DYNAMIC(CDIALOGGenerate, CDialogEx)
 
