@@ -45,6 +45,17 @@ struct SixdofData
 			+ to_string(Roll) + " " + to_string(Pitch) + " ";
 	}
 
+	void SetData(long double x, long double y, long double z, 
+		long double yaw, long double roll, long double pitch)
+	{
+		X = x;
+		Y = y;
+		Z = z;
+		Yaw = yaw;
+		Roll = roll;
+		Pitch = pitch;
+	}
+
 	void GetDataFromArray(double* data)
 	{
 		X = data[0];
@@ -80,6 +91,17 @@ struct RoadSpectrumData
 	void SetPositions(double x, double y, double z, 
 		double yaw, double roll, double pitch)  
 	{
+		Position.X = x;
+		Position.Y = y;
+		Position.Z = z;
+		Position.Yaw = yaw;
+		Position.Roll = roll;
+		Position.Pitch = pitch;	
+	}
+
+	void SetSpeeds(double x, double y, double z, 
+		double yaw, double roll, double pitch)  
+	{
 		Speed.X = x;
 		Speed.Y = y;
 		Speed.Z = z;
@@ -88,7 +110,7 @@ struct RoadSpectrumData
 		Speed.Pitch = pitch;	
 	}
 
-	void SetSpeeds(double x, double y, double z, 
+	void SetAccs(double x, double y, double z, 
 		double yaw, double roll, double pitch)  
 	{
 		Acc.X = x;
@@ -97,17 +119,6 @@ struct RoadSpectrumData
 		Acc.Yaw = yaw;
 		Acc.Roll = roll;
 		Acc.Pitch = pitch;	
-	}
-
-	void SetAccs(double x, double y, double z, 
-		double yaw, double roll, double pitch)  
-	{
-		Position.X = x;
-		Position.Y = y;
-		Position.Z = z;
-		Position.Yaw = yaw;
-		Position.Roll = roll;
-		Position.Pitch = pitch;	
 	}
 
 	string ToString() 

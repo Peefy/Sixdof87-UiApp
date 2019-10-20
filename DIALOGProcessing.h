@@ -53,5 +53,5 @@ public:
 	void WriteFile();
 	void Processing();
 	void TestProcessing();
-
+	void DataFromFile();
 };

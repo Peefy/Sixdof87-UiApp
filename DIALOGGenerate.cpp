@@ -270,57 +270,30 @@ void CDIALOGGenerate::OnBnClickedButton3() //“生成随机文件”按钮
 		MessageBox(_T("设置路径不能为空！"));
 		return;
 	}
-	//SetCurrentDirectory(m_chSaveDir); //设置到默认的目录m_chSaveDir
+
 	GetDlgItemText(IDC_EDIT3, m_FileName);
 	double Time = 5;
-	double t = 0;
-	double delta_t = 0.02;
 	double fx = 0, fy = 0, fz = 0, fyaw = 0.2, froll = 0.3, fpitch = 0.5;
-	double x = 0, y = 0, z = 0, yaw = 0, roll = 0, pitch = 0, dx, dy, dz, dyaw, droll, dpitch, ddx, ddy, ddz, ddyaw, ddroll, ddpitch;
 	double xval = 0;
 	double yval = 0;
 	double zval = 0;
 	double rollval = 5;
 	double yawval = 3;
 	double pitchval = 4;
-	//复选框radio button：“路谱定义”——4组：m_Radio1,4,7,10（选中状态用0，1，2，3表示）；“强度”——m_Radio8，17
-	//UpdateData(TRUE);
-	//CString m_R1;
-	//m_R1.Format(_T("the value of m_Radio1 is %d"),m_Radio1);
-	//AfxMessageBox(m_R1);
+	double delta_t = waveGenerator.GetSampleTime();
+	waveGenerator.Amp.SetData(xval, yval, zval, yawval, rollval, pitchval);
+	waveGenerator.Freq.SetData(fx, fy, fz, fyaw, froll, fpitch);
+	waveGenerator.ClearCountTime();
+
 	UpdateData(TRUE);
 
-	//周期框读回double m_dNum0,1,2,3,4,5
 
 	ofstream fout(m_chSaveDir + "\\" + m_FileName);
 	if (fout.is_open())
 	{
 		for (int i = 0; i < Time / delta_t; i++)
 		{
-
-			x = sin(2 * pi * fx * t);
-			y = sin(2 * pi * fy * t);
-			z = sin(2 * pi * fz * t);
-			yaw = sin(2 * pi * fyaw * t) * yawval;
-			roll = sin(2 * pi * froll * t) * rollval;
-			pitch = sin(2 * pi * fpitch * t) * pitchval;
-			t += delta_t;
-
-			dx = (sin(2 * pi * fx * t) - x) / delta_t;
-			dy = (sin(2 * pi * fy * t) - y) / delta_t;
-			dz = (sin(2 * pi * fz * t) - z) / delta_t;
-			dyaw = (sin(2 * pi * fyaw * t) - yaw) / delta_t;
-			droll = (sin(2 * pi * froll * t) - roll) / delta_t;
-			dpitch = (sin(2 * pi * fpitch * t) - pitch) / delta_t;
-
-			ddx = sin(2 * pi * fx * (t + delta_t)) - sin(2 * pi * fx * t) - dx;
-			ddy = sin(2 * pi * fy * (t + delta_t)) - sin(2 * pi * fy * t) - dy;
-			ddz = sin(2 * pi * fz * (t + delta_t)) - sin(2 * pi * fz * t) - dz;
-			ddyaw = sin(2 * pi * fyaw * (t + delta_t)) - sin(2 * pi * fyaw * t) - dyaw;
-			ddroll = sin(2 * pi * froll * (t + delta_t)) - sin(2 * pi * froll * t) - droll;
-			ddpitch = sin(2 * pi * fpitch * (t + delta_t)) - sin(2 * pi * fpitch * t) - dpitch;
-
-			fout << x << " " << y << " " << z << " " << yaw << " " << roll << " " << pitch << " " << dx << " " << dy << " " << dz << " " << dyaw << " " << droll << " " << dpitch << " " << ddx << " " << ddy << " " << ddz << " " << ddyaw << " " << ddroll << " " << ddpitch << endl;
+			fout << waveGenerator.GetNext().ToString().c_str() << "\n";
 		}
 		fout.flush();
 		fout.close();
