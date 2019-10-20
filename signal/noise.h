@@ -20,8 +20,10 @@ namespace Signal
 	public:
 		NoiseGenerator();
 		~NoiseGenerator();
+		SixdofData GenerateNoneNoise();
 		SixdofData GenerateNoise(SixdofData val);
 		SixdofData GenerateNoise(double val);
+		SixdofData GenerateGaussianNoise(double val);
 	private:
 		NoiseType type;
 		double dBval;

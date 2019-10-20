@@ -4,6 +4,11 @@
 
 namespace Signal
 {
+	static double wgn()
+	{
+		return rand() / RAND_MAX;
+	}
+
 	NoiseGenerator::NoiseGenerator() :
 		type(NoiseTypeRandom), 
 		dBval(50.0)
@@ -14,6 +19,11 @@ namespace Signal
 	NoiseGenerator::~NoiseGenerator()
 	{
 
+	}
+
+	SixdofData NoiseGenerator::GenerateNoneNoise()
+	{
+		return SixdofData();
 	}
 
 	SixdofData NoiseGenerator::GenerateNoise(SixdofData val)
@@ -38,6 +48,11 @@ namespace Signal
 		auto rollrand = (rand() / (double)RAND_MAX) - 0.5;
 		auto pitchrand = (rand() / (double)RAND_MAX) - 0.5;
 		return SixdofData(xrand, yrand, zrand, yawrand, rollrand, pitchrand) * val;
+	}
+
+	SixdofData NoiseGenerator::GenerateGaussianNoise(double val)
+	{
+		return SixdofData();
 	}
 
 }

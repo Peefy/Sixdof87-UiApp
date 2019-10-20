@@ -5,8 +5,8 @@
 #include <math.h>
 
 #include "signal.h"
+#include "noise.h"
 #include "roadspectrum.h"
-
 
 namespace Signal
 {
@@ -22,6 +22,7 @@ namespace Signal
 		void ClearCountTime();
 		RoadSpectrumData GetNext();
 	private:
+		NoiseGenerator noiseGenerator;
 		RoadSpectrumData data;
 		RoadSpectrumData lastdata;
 		double deltat;

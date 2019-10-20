@@ -71,14 +71,6 @@ namespace Signal
 
 	};
 
-	ButterworthFilter::ButterworthFilter()
-	{
-	}
-
-	ButterworthFilter::~ButterworthFilter()
-	{
-	}
-
 }
 
 #endif

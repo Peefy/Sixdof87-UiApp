@@ -34,12 +34,13 @@ namespace Signal
 
 	RoadSpectrumData WaveGenerator::GetNext()
 	{
-		auto x = Amp.X * sin(2 * pi * Freq.X * t);
-		auto y = Amp.Y * sin(2 * pi * Freq.Y * t);
-		auto z = Amp.Z * sin(2 * pi * Freq.Z * t);
-		auto yaw = Amp.Yaw * sin(2 * pi * Freq.Yaw * t);
-		auto roll = Amp.Roll * sin(2 * pi * Freq.Roll * t);
-		auto pitch = Amp.Pitch * sin(2 * pi * Freq.Pitch * t);
+		auto noise = noiseGenerator.GenerateNoneNoise();
+		auto x = Amp.X * sin(2 * pi * Freq.X * t) + noise.X;
+		auto y = Amp.Y * sin(2 * pi * Freq.Y * t) + noise.Y;
+		auto z = Amp.Z * sin(2 * pi * Freq.Z * t) + noise.Z;
+		auto yaw = Amp.Yaw * sin(2 * pi * Freq.Yaw * t) + noise.Yaw;
+		auto roll = Amp.Roll * sin(2 * pi * Freq.Roll * t) + noise.Roll;
+		auto pitch = Amp.Pitch * sin(2 * pi * Freq.Pitch * t) + noise.Pitch;
 
 		auto xspeed = (x - lastdata.Position.X) / deltat;
 		auto yspeed = (y - lastdata.Position.Y) / deltat;
