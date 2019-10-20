@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "signal/roadspectrum.h"
+
 using namespace std;
 
 #define MAX_PROCESS_LINE 5
@@ -302,44 +304,4 @@ void CDIALOGProcessing::TestProcessing()
 	memmove(TargetBuf, SourceBuf, sizeof(double) * MAX_PROCESS_LINE * ColNum); 
 }
 
-void CECATSampleDlg::DataFromFile()
-{
-	CString targetHistoryPath = "";
-	CString defaultDir = L"C:\\";  //默认打开的文件路径
-	CString defaultFile = L"test.txt"; //默认打开的文件名
-	CFileDialog dlg(TRUE, _T("txt"), defaultDir + "\\" + defaultFile, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, _T("数据文件|*.txt||"));
-	if (dlg.DoModal() == IDOK)
-	{
-		targetHistoryPath = dlg.GetPathName();
-		if (targetHistoryPath == "")
-		{
-			MessageBox(_T("未选择文件！"));
-			return;
-		}
-	}
 
-	ifstream fin(targetHistoryPath);		
-	double *ptr = &SourceBuf[0]; 
-	int readcount = 0;
-	int arrcount = 0;
-	if (!fin.is_open())
-	{
-		AfxMessageBox(_T("未找到文件!"));
-		return;
-	}
-	roadSpectrum.DataBuffer.clear();
-	while (!fin.eof() && readcount < MAX_REPRODUCE_LINE * DATA_COL_NUM)
-	{
-		fin >> *ptr; 
-		ptr++;
-		readcount++;
-		arrcount++;
-		if (arrcount >= DATA_COL_NUM)
-		{
-			arrcount = 0;
-			roadSpectrum.DataBuffer.push_back(Signal::RoadSpectrumData::FromArray(SourceBuf));
-			ptr = &SourceBuf[0];
-		}
-	}
-	fin.close();
-}

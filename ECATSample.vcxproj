@@ -194,7 +194,6 @@
     <ClCompile Include="signal\filter.cpp" />
     <ClCompile Include="signal\noise.cpp" />
     <ClCompile Include="signal\roadspectrum.cpp" />
-    <ClCompile Include="signal\signal.cpp" />
     <ClCompile Include="signal\wavegenerator.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -4,9 +4,9 @@
 
 #include <math.h>
 
+#include "signal.h"
 #include "roadspectrum.h"
 
-#define DEFAULT_DT 0.02
 
 namespace Signal
 {
