@@ -63,10 +63,10 @@ using namespace SixdofModbus;
 
 #define TIMER_MS 10
 
-#define SIXDOF_CONTROL_DELEY     20
+#define SIXDOF_CONTROL_DELEY     10
 #define SCENE_THREAD_DELAY       1000
 #define SENSOR_THREAD_DELAY      1000
-#define DATA_BUFFER_THREAD_DELAY 20
+#define DATA_BUFFER_THREAD_DELAY 1000
 
 #define DDA_UP_COUNT    400
 #define DDA_ONCE_COUNT  100
@@ -109,7 +109,6 @@ int poleLengthRenderCount = 0;
 
 MotionControl delta;
 DataPackage data;
-IllusionDataAdapter vision;
 
 SixDofPlatformStatus status = SIXDOF_STATUS_BOTTOM;
 SixDofPlatformStatus lastStartStatus = SIXDOF_STATUS_BOTTOM;
@@ -192,16 +191,29 @@ int visionCtrlComand = 0;
 CRITICAL_SECTION cs;
 CRITICAL_SECTION ctrlCommandLockobj;
 
-// 控制PLC
+// 路谱数据
+Signal::RoadSpectrumData roaddata;
+// 路谱数据序列
 Signal::RoadSpectrum roadSpectrum;
-SixdofModbus::ModbusPackage sendData;
+// 控制PLC,注意PLC地址+1
+SixdofModbus::ModbusDataAdapter modbusdata;
+// 控制PLC六自由度平台的控制指令
 SixdofModbus::ControlCommandEnum sendStatus = CONTROL_COMMAND_NONE;
+// 读取PLC六自由度平台的状态
+SixdofModbus::SixdofStateEnum sixdofState = SIXDOF_STATE_NONE;
 
 DWORD WINAPI DataTransThread(LPVOID pParam)
 {
 	while (true)
 	{
+		DWORD start_time = 0;
+		start_time = GetTickCount();
+
 		SixdofControl();
+		modbusdata.ExchangeData(sendStatus, sixdofState, roaddata);
+
+		DWORD end_time = GetTickCount();
+		runTime = end_time - start_time;		
 	}
 	return 0;
 }
@@ -342,8 +354,8 @@ void OpenThread()
 	InitializeCriticalSection(&ctrlCommandLockobj);
 	DataThread = (HANDLE)CreateThread(NULL, 0, DataTransThread, NULL, 0, NULL);
 	//SensorThread = (HANDLE)CreateThread(NULL, 0, SensorInfoThread, NULL, 0, NULL);
-	SceneThread = (HANDLE)CreateThread(NULL, 0, SceneInfoThread, NULL, 0, NULL);
-	DataBufferThread = (HANDLE)CreateThread(NULL, 0, DataBufferInfoThread, NULL, 0, NULL);
+	//SceneThread = (HANDLE)CreateThread(NULL, 0, SceneInfoThread, NULL, 0, NULL);
+	//DataBufferThread = (HANDLE)CreateThread(NULL, 0, DataBufferInfoThread, NULL, 0, NULL);
 }
 
 void SensorRead()
@@ -360,35 +372,20 @@ double vision_yaw = 0;
 
 void SixdofControl()
 {
-	Sleep(10);
+	Sleep(SIXDOF_CONTROL_DELEY);
 	if (closeDataThread == false)
 	{	
 		U16 upCount = DDA_UP_COUNT;
-		DWORD start_time = 0;
-		start_time = GetTickCount();
-#if PATH_DATA_USE_DDA
-		auto delay = isTest == true ? SIXDOF_CONTROL_DELEY : SIXDOF_CONTROL_DELEY;
-		auto onceCount = isTest == true ? DDA_ONCE_COUNT : DDA_ONCE_COUNT;
-#else
-		auto delay = isTest == true ? SIXDOF_CONTROL_DELEY : 0;
-		auto onceCount = isTest == true ? DDA_ONCE_COUNT : 1;
-#endif
+
 		if (isCsp == false)
 		{
-#if PATH_DATA_USE_DDA
-			Counter = delta.GetDDACount();
-#else
-			if (isTest == true)
-			{
-				Counter = delta.GetDDACount();
-			}
-#endif
+			Counter = 0;
 			if (Counter < upCount)
 			{
 				I32 dis[AXES_COUNT] = {DIS_PER_R, DIS_PER_R, DIS_PER_R, DIS_PER_R, DIS_PER_R, DIS_PER_R};
 				if (true)
 				{
-					for (auto i = 0; i < onceCount; ++i)
+					for (auto i = 0; i < 1; ++i)
 					{
 						// 正弦测试运动
 						if (isTest == true)
@@ -405,6 +402,7 @@ void SixdofControl()
 							double pitch = 0;
 							double yaw = 0;
 							double stopTime = 0;
+							double deltat = 0.02;
 							if (t <= chirpTime && enableChirp == true)
 							{
 								for (auto i = 0; i < AXES_COUNT; ++i)
@@ -479,6 +477,7 @@ void SixdofControl()
 							data.Roll = (int16_t)(roll * 100);
 							data.Pitch = (int16_t)(pitch * 100);
 							data.Yaw = (int16_t)(yaw * 100);
+							roaddata.SetPositions(x, y, z, yaw, roll, pitch);
 							double* pulse_dugu = Control(x, y, z, roll, yaw, pitch);
 							for (auto ii = 0; ii < AXES_COUNT; ++ii)
 							{
@@ -488,7 +487,7 @@ void SixdofControl()
 								auto pulse = pulse_cal[ii];
 								dis[ii] = (int)pulse;
 							}
-							t += 0.00095;
+							t += deltat;
 							if (stopSCurve == true && isCosMode == false)
 							{
 								int index = 0;
@@ -506,11 +505,11 @@ void SixdofControl()
 							}
 							if (stopTime == 0 || nowt <= stopTime) 
 							{
-								delta.SetDDAData(dis);
+								//delta.SetDDAData(dis);
 							}	
 							else if (nowt > stopTime)
 							{
-								t -= 0.00095;
+								t -= deltat;
 							}
 						}
 						// 路谱
@@ -548,6 +547,7 @@ void SixdofControl()
 							auto pitch = RANGE(MyMAFilter(&pitchFiter, vision_pitch), -VISION_MAX_DEG, VISION_MAX_DEG);
 							auto yaw = RANGE(MyMAFilter(&yawFiter, vision_yaw), -VISION_MAX_DEG, VISION_MAX_DEG);
 							z += (enableShock == true ? shockz : 0);
+							roaddata.SetPositions(x, y, z, yaw, roll, pitch);
 							double* pulse_dugu = Control(x, y, z, roll, yaw, pitch);
 							for (auto ii = 0; ii < AXES_COUNT; ++ii)
 							{
@@ -563,26 +563,11 @@ void SixdofControl()
 							data.Roll = (int16_t)(roll * 100);
 							data.Pitch = (int16_t)(pitch * 100);
 							data.Yaw = (int16_t)(yaw * 100);
-							if (status == SIXDOF_STATUS_RUN)
-							{
-#if PATH_DATA_USE_DDA
-								t += 0.00095;
-								delta.SetDDAData(dis);
-#else
-								t += 0.01;
-								delta.Csp(dis);
-#endif
-							}
 						}
 					}
 				}
 			}
 		}
-		Sleep(delay);
-		DWORD end_time = GetTickCount();
-		runTime = end_time - start_time;
-		//config::RecordPath(fileName, data.X / 10.0, data.Y / 10.0, data.Z / 10.0, 
-		//	data.Roll / 100.0, data.Yaw / 100.0, data.Pitch / 100.0);
 	}
 }
 
@@ -1320,9 +1305,9 @@ void CECATSampleDlg::OnTimer(UINT nIDEvent)
 		poleLength[3], poleLength[4], poleLength[5]);
 	SetDlgItemText(IDC_EDIT_Pulse, statusStr);
 
-	statusStr.Format(_T("1:%.2f 2:%.2f 3:%.2f 4:%.2f 5:%.2f 6:%.2f"),
-		vision.X, vision.Y, vision.Z,
-		vision.Roll, vision.Pitch, vision.Yaw);
+	statusStr.Format(_T("1:%.2f 2:%.2f 3:%.2f 4:%.2f 5:%.2f 6:%.2f"), 
+		poleLength[0], poleLength[1], poleLength[2],
+		poleLength[3], poleLength[4], poleLength[5]);
 	SetDlgItemText(IDC_EDIT_Sensor, statusStr);
 	
 	delta.CheckStatus(status);
