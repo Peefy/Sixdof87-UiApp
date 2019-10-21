@@ -14,7 +14,7 @@
 
 #define IS_FILE_RECORD 1
 
-UdpClient udpClient = UdpClient(UDP_SELF_PORT);
+static UdpClient udpClient = UdpClient(UDP_SELF_PORT);
 #if IS_USE_WASHOUT
 WashoutAlgorithm flightwashout;
 #endif

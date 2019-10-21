@@ -8,6 +8,8 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
+#include <time.h>
 
 using namespace std;
 
@@ -270,16 +272,19 @@ void CDIALOGGenerate::OnBnClickedButton3() //“生成随机文件”按钮
 		MessageBox(_T("设置路径不能为空！"));
 		return;
 	}
-
+	srand((unsigned)time(NULL));
 	GetDlgItemText(IDC_EDIT3, m_FileName);
-	double Time = 5;
-	double fx = 0, fy = 0, fz = 0, fyaw = 0.2, froll = 0.3, fpitch = 0.5;
+	double Time = 20;
+	double fx = 0, fy = 0, fz = 0;
+	double fyaw = abs((rand() / (double)RAND_MAX)) * 0.5;
+	double froll = abs((rand() / (double)RAND_MAX)) * 0.5;
+	double fpitch = abs((rand() / (double)RAND_MAX)) * 0.5;
 	double xval = 0;
 	double yval = 0;
 	double zval = 0;
-	double rollval = 5;
-	double yawval = 3;
-	double pitchval = 4;
+	double rollval = 5 + abs((rand() / (double)RAND_MAX)) * 0.5;
+	double yawval = 5 + abs((rand() / (double)RAND_MAX)) * 0.5;
+	double pitchval = 5 + abs((rand() / (double)RAND_MAX)) * 0.5;
 	double delta_t = waveGenerator.GetSampleTime();
 	waveGenerator.Amp.SetData(xval, yval, zval, yawval, rollval, pitchval);
 	waveGenerator.Freq.SetData(fx, fy, fz, fyaw, froll, fpitch);

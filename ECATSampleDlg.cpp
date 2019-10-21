@@ -29,6 +29,7 @@
 #include "control/pid.h"
 #include "control/kalman_filter.h"
 #include "control/illusion.h"
+#include "control/comwithplc.h"
 #include "control/modbus_dataapdapter.h"
 
 #include "config/recordpath.h"
@@ -196,11 +197,12 @@ Signal::RoadSpectrumData roaddata;
 // 路谱数据序列
 Signal::RoadSpectrum roadSpectrum;
 // 控制PLC,注意PLC地址+1
-SixdofModbus::ModbusDataAdapter modbusdata;
+PLCDataAdapter plcData;
+//SixdofModbus::ModbusDataAdapter modbusdata;
 // 控制PLC六自由度平台的控制指令
-SixdofModbus::ControlCommandEnum sendStatus = CONTROL_COMMAND_NONE;
+ControlCommandEnum sendStatus = CONTROL_COMMAND_NONE;
 // 读取PLC六自由度平台的状态
-SixdofModbus::SixdofStateEnum sixdofState = SIXDOF_STATE_NONE;
+SixdofStateEnum sixdofState = SIXDOF_STATE_NONE;
 
 DWORD WINAPI DataTransThread(LPVOID pParam)
 {
@@ -210,7 +212,8 @@ DWORD WINAPI DataTransThread(LPVOID pParam)
 		start_time = GetTickCount();
 
 		SixdofControl();
-		modbusdata.ExchangeData(sendStatus, sixdofState, roaddata);
+		plcData.SendData(sendStatus, roaddata);
+		//modbusdata.ExchangeData(sendStatus, sixdofState, roaddata);
 
 		DWORD end_time = GetTickCount();
 		runTime = end_time - start_time;		
@@ -1378,30 +1381,7 @@ void CECATSampleDlg::OnChkAbs()
 
 void CECATSampleDlg::OnBnClickedBtnRise()
 {	
-#if IS_DELTA_MOTION
-	if (status != SIXDOF_STATUS_BOTTOM)
-	{
-		return;
-	}
-	delta.DownUsingHomeMode();
-	Sleep(100);
-	delta.ReadAllSwitchStatus();
-	Sleep(50);
-	if (delta.IsAllAtBottom() == false)
-	{
-		return;
-	}	
-	status = SIXDOF_STATUS_ISRISING;	
-	delta.ResetStatus();
-	auto more_time_count = 10;
-	for (auto i = 0;i < more_time_count; ++i)
-	{
-		delta.ResetAlarm();
-		Sleep(50);
-	}
-	delta.Rise();
-	Sleep(50);
-#else
+
 	if (status != SIXDOF_STATUS_BOTTOM && status != SIXDOF_STATUS_ISFALLING)
 	{
 #if IS_USE_MESSAGEBOX
@@ -1409,17 +1389,16 @@ void CECATSampleDlg::OnBnClickedBtnRise()
 #endif
 		return;
 	}
-	delta.DownUsingHomeMode();
-	Sleep(100);
-	delta.ReadAllSwitchStatus();
-	Sleep(50);
+	//delta.DownUsingHomeMode();
+	//Sleep(100);
+	//delta.ReadAllSwitchStatus();
+	//Sleep(50);
 	status = SIXDOF_STATUS_ISRISING;	
 	sendStatus = CONTROL_COMMAND_RISING;
-	delta.ResetStatus();
-	delta.Rise();
+	//delta.ResetStatus();
+	//delta.Rise();
 	Sleep(50);
-#endif
-
+	status = SIXDOF_STATUS_READY;
 }
 
 void CECATSampleDlg::OnBnClickedBtnMiddle()
@@ -1458,17 +1437,12 @@ void CECATSampleDlg::OnBnClickedBtnStart()
 #endif
 		return;
 	}
-#if PATH_DATA_USE_DDA
-	delta.EnableDDA();
-	delta.ServoStop();
-#else
-#endif
 	status = SIXDOF_STATUS_RUN;
 	sendStatus = CONTROL_COMMAND_START_SIGNAL;
 	//Sleep(100);
-	delta.RenewNowPulse();
-	delta.ResetStatus();
-	delta.GetMotionAveragePulse();
+	//delta.RenewNowPulse();
+	//delta.ResetStatus();
+	//delta.GetMotionAveragePulse();
 	isTest = false;
 	sin_time_pulse = 0;
 	t = 0;
@@ -1490,10 +1464,10 @@ void CECATSampleDlg::OnCommandStopme()
 		return;
 	}
 	closeDataThread = true;
-	Sleep(100);
-	delta.ServoStop();
-	Sleep(100);
-	delta.MoveToZeroPulseNumber();
+	//Sleep(100);
+	//delta.ServoStop();
+	//Sleep(100);
+	//delta.MoveToZeroPulseNumber();
 	status = SIXDOF_STATUS_READY;
 	sendStatus = CONTROL_COMMAND_STOP;
 	ResetDefaultData(&data);
@@ -1502,26 +1476,15 @@ void CECATSampleDlg::OnCommandStopme()
 void CECATSampleDlg::OnBnClickedBtnStopme()
 {
 	stopSCurve = true;
-	if (closeDataThread == false){
-		//等待DDA数据运动完毕
-		//Sleep(2000); 
-	}
 	closeDataThread = true;
-	delta.ServoStop();
+	//delta.ServoStop();
 	//Sleep(100);
-	delta.DisableDDA();
-	delta.ServoAllOnOff(true);
+	//delta.DisableDDA();
+	//delta.ServoAllOnOff(true);
 	if (status == SIXDOF_STATUS_RUN)
 	{
-		if (stopAndMiddle == true)
-		{
-			delta.MoveToZeroPulseNumber();
-			status = SIXDOF_STATUS_READY;
-		}
-		else
-		{
-			status = SIXDOF_STATUS_MIDDLE;
-		}
+		//delta.MoveToZeroPulseNumber();
+		status = SIXDOF_STATUS_READY;
 	}
 	sendStatus = CONTROL_COMMAND_STOP;
 	ResetDefaultData(&data);
@@ -1569,11 +1532,11 @@ void CECATSampleDlg::OnBnClickedBtnDown()
 #endif
 		return;
 	}
-	delta.ServoStop();
-	Sleep(100);
+	//delta.ServoStop();
+	//Sleep(100);
 	status = SIXDOF_STATUS_ISFALLING;
 	sendStatus = CONTROL_COMMAND_DOWN;
-	delta.DownUsingHomeMode();
+	//delta.DownUsingHomeMode();
 }
 
 void CECATSampleDlg::OnBnClickedOk()

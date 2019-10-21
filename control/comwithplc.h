@@ -1,37 +1,59 @@
 
-
-#ifndef __MODBUS_DATA_ADAPTER_H_
-#define __MODBUS_DATA_ADAPTER_H_
+#ifndef __COM_WITH_PLC_H_
+#define __COM_WITH_PLC_H_
 
 #include <stdint.h>
 #include <memory>
 
-#include "../modbus.h"
+#include "udp.h"
+
 #include "../signal/roadspectrum.h"
 
-#include "comwithplc.h"
-
+using namespace std;
 using namespace Signal;
 
-namespace SixdofModbus
+#define PLC_DATA_HEAD  0xAABB
+#define PLC_DATA_TAIL  0xCCDD
+
+typedef enum 
 {
+	// 0 空指令
+	CONTROL_COMMAND_NONE = 0,
+	// 1 上升
+	CONTROL_COMMAND_RISING = 1,
+	// 2 下降
+	CONTROL_COMMAND_DOWN = 2,
+	// 3 路谱运行
+	CONTROL_COMMAND_START_SIGNAL = 3,
+	// 4 正弦运行
+	CONTROL_COMMAND_START_SINE = 4,
+	// 5 平台回中
+	CONTROL_COMMAND_MIDDLE = 5,
+	// 6 平台停止并回中
+	CONTROL_COMMAND_STOP = 6,
+	// 7 平台暂停运行
+	CONTROL_COMMAND_PAUSE = 7,
+	// 8 平台恢复运行
+	CONTROL_COMMAND_RECOVER = 8
+}ControlCommandEnum;
 
-#define MODBUS_SLAVE_PORT         9000
-#define MODBUS_SLAVE_IP_STRING    "192.168.0.123"
-
-#define MODBUS_MASTER_PORT        502
-#define MODBUS_MASTER_IP_STRING   "192.168.0.22"
-
-#define MODBUS_SLAVE_ID  1
-
-#define MODBUS_DATA_HEAD  0xAABB
-#define MODBUS_DATA_TAIL  0xCCDD
-
-#define IS_MODBUS_SLAVE  (true)
-#define IS_PLC_BIGENDIAN (true)
-#define IS_PLC_COMM      (true)
-
-#define DATA_SCALE 0.001
+typedef enum 
+{
+	// 0 空状态
+	SIXDOF_STATE_NONE = 0,   
+	// 1 正在上升
+	SIXDOF_STATE_RISING = 1,
+	// 2 在最低位
+	SIXDOF_STATE_DOWN = 2,
+	// 3 正在路谱运行
+	SIXDOF_STATE_START_SIGNAL = 3,
+	// 4 正在正弦运动
+	SIXDOF_STATE_START_SINE = 4,
+	// 5 平台在中立位
+	SIXDOF_STATE_MIDDLE = 5,
+	// 6 平台暂停
+	SIXDOF_STATE_PAUSE = 6,
+}SixdofStateEnum;
 
 #pragma pack (1)
 typedef struct
@@ -66,33 +88,26 @@ typedef struct
 	uint16_t Reseverd3;     // 保留3
 	uint16_t Reseverd4;     // 保留4
 	uint16_t Tail;          //尾校验 0xCCDD
-}ModbusPackage;
+}ComWiwhPLCPackage;
 #pragma pack () 
 
-class ModbusDataAdapter
+class PLCDataAdapter
 {
 public:
-	ModbusDataAdapter();
-	~ModbusDataAdapter();
-	void ExchangeData(ControlCommandEnum& command, SixdofStateEnum& status, RoadSpectrumData& roaddata);
-	bool IsConnect;
-protected:
-	int bufferLength;
-	ModbusPackage data;
-	modbus_t* modbus;
+	PLCDataAdapter();
+	~PLCDataAdapter();
+	void SendData(ControlCommandEnum control, const RoadSpectrumData& roaddata);
 private:
-	void ReadData();
-	void WriteData();
-	void DataInit();	
-	void ModbusInit();
+	int bufferLength;
+protected:
+	void DataInit();
+	int SelfPort;
+	string SelfIp;
+	int PLCPort;
+	string PLCIp;
 };
 
-void ModbusPackageInit(ModbusPackage * data);
-void ModbusPackageSetData(ModbusPackage * data, 
-						  double x, double y, double z, double roll, double pitch, double yaw);
-
-}
 
 
-#endif
+#endif // !__COM_WITH_PLC_H_
 

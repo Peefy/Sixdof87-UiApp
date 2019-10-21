@@ -4,16 +4,17 @@
 
 namespace SixdofModbus
 {
+	#define BUFFER_MAX_COUNT 200
 
-	static int scale = 1000.0;
-	static uint16_t dataBuffers[sizeof(ModbusPackage) / 2];
+	static double scale = 1000.0;
+	static uint16_t dataBuffers[BUFFER_MAX_COUNT];
 
-	inline int16_t ExchangeInt16Bit(int16_t data)
+	static inline int16_t ExchangeInt16Bit(int16_t data)
 	{
 		return (int16_t)((((uint8_t)data) << 8) + (uint8_t)(data >> 8));
 	}
 
-	inline int32_t ExchangeInt32Bit(int32_t data)
+	static inline int32_t ExchangeInt32Bit(int32_t data)
 	{
 		static int8_t b[4] = {0};
 		memmove(b, &data, sizeof(int8_t) * 4);
@@ -124,7 +125,7 @@ namespace SixdofModbus
 	{
 		if (modbus == nullptr)
 			return;
-		modbus_read_registers(modbus, 0 + (int)IS_PLC_COMM, bufferLength, dataBuffers);
+		modbus_read_registers(modbus, 1 - (int)IS_PLC_COMM, bufferLength, dataBuffers);
 		memmove(&data, dataBuffers, sizeof(uint16_t) * bufferLength);
 		if (IS_PLC_BIGENDIAN == true)
 		{
@@ -141,7 +142,7 @@ namespace SixdofModbus
 			ModbusDoExchange(&data);
 		}	
 		memmove(dataBuffers, &data, sizeof(uint16_t) * bufferLength);
-		modbus_write_registers(modbus, 0 + (int)IS_PLC_COMM, bufferLength, dataBuffers);
+		modbus_write_registers(modbus, 1 - (int)IS_PLC_COMM, bufferLength, dataBuffers);
 	}
 
 	ModbusDataAdapter::ModbusDataAdapter()

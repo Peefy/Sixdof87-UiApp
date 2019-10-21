@@ -12,7 +12,7 @@
 
 using namespace std;
 
-#define MAX_PROCESS_LINE 5
+#define MAX_PROCESS_LINE 1000
 
 double SourceBuf[RowNum][ColNum] = {{0.0}};
 double TargetBuf[RowNum][ColNum] = {{0.0}};
