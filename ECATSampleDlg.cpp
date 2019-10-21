@@ -1381,22 +1381,12 @@ void CECATSampleDlg::OnChkAbs()
 
 void CECATSampleDlg::OnBnClickedBtnRise()
 {	
-
-	if (status != SIXDOF_STATUS_BOTTOM && status != SIXDOF_STATUS_ISFALLING)
+	if (status == SIXDOF_STATUS_READY)
 	{
-#if IS_USE_MESSAGEBOX
-		MessageBox(_T(SIXDOF_NOT_BOTTOM_MESSAGE));
-#endif
-		return;
+		MessageBox(_T(SIXDOF_NOT_BOTTOM_AND_RISE_MESSAGE));
 	}
-	//delta.DownUsingHomeMode();
-	//Sleep(100);
-	//delta.ReadAllSwitchStatus();
-	//Sleep(50);
 	status = SIXDOF_STATUS_ISRISING;	
 	sendStatus = CONTROL_COMMAND_RISING;
-	//delta.ResetStatus();
-	//delta.Rise();
 	Sleep(50);
 	status = SIXDOF_STATUS_READY;
 }
@@ -1439,20 +1429,10 @@ void CECATSampleDlg::OnBnClickedBtnStart()
 	}
 	status = SIXDOF_STATUS_RUN;
 	sendStatus = CONTROL_COMMAND_START_SIGNAL;
-	//Sleep(100);
-	//delta.RenewNowPulse();
-	//delta.ResetStatus();
-	//delta.GetMotionAveragePulse();
 	isTest = false;
 	sin_time_pulse = 0;
 	t = 0;
 	dataChartTime = 0;
-
-	//time_t currtime = time(NULL);
-	//struct tm* p = gmtime(&currtime);
-	//sprintf_s(fileName, "./datas/pathdata%d-%d-%d-%d-%d-%d.txt", p->tm_year + 1990, p->tm_mon + 1,
-	//	p->tm_mday, p->tm_hour + 8, p->tm_min, p->tm_sec);
-
 	closeDataThread = false;
 	isStart = true;	
 }

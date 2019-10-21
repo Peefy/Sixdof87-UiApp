@@ -255,7 +255,7 @@ void CDIALOGProcessing::WriteFile()
 {
 	CTime tm = CTime::GetCurrentTime();
 	CString TargetFileName;
-	TargetFileName.Format(_T("%d_%d_%d__%d_%d_%d.txt"), tm.GetYear(), tm.GetMonth(), tm.GetDay(), tm.GetHour(), tm.GetMinute(), tm.GetSecond());
+	TargetFileName.Format(_T("RoadSpectrumDeal%d_%d_%d_%d_%d_%d.txt"), tm.GetYear(), tm.GetMonth(), tm.GetDay(), tm.GetHour(), tm.GetMinute(), tm.GetSecond());
 	//CString TargetFileName=_T("\\target.txt");
 	ofstream fout(m_TargetDir + "\\" + TargetFileName);
 
