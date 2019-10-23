@@ -108,7 +108,6 @@ double pulse_cal[AXES_COUNT];
 double poleLength[AXES_COUNT];
 int poleLengthRenderCount = 0;
 
-MotionControl delta;
 DataPackage data;
 
 SixDofPlatformStatus status = SIXDOF_STATUS_BOTTOM;
@@ -941,7 +940,7 @@ void CECATSampleDlg::AppInit()
 #else
 	GetDlgItem(IDC_BUTTON_VISIBLE_TEST)->ShowWindow(SW_HIDE);
 #endif
-
+	EanbleButton(1);
 	ChartInit();
 	AppConfigInit();
 	for (auto i = 1; i <= AXES_COUNT; ++i)
@@ -1016,10 +1015,6 @@ BOOL CECATSampleDlg::PreTranslateMessage(MSG* pMsg)
 		if (pMsg->wParam == 'X')
 		{
 			closeDataThread = true;
-			delta.ServoStop();
-			Sleep(100);
-			delta.DisableDDA();
-			delta.ServoAllOnOff(true);
 		}
 		if (pMsg->wParam == 'Z' || pMsg->wParam == 'L')
 		{
@@ -1212,12 +1207,12 @@ void CECATSampleDlg::ShowImage()
 
 void CECATSampleDlg::RenderSwitchStatus()
 {
-	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS1), delta.IsAtBottoms[0] ? COLOR_GREEN : COLOR_RED);
-	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS2), delta.IsAtBottoms[1] ? COLOR_GREEN : COLOR_RED);
-	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS3), delta.IsAtBottoms[2] ? COLOR_GREEN : COLOR_RED);
-	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS4), delta.IsAtBottoms[3] ? COLOR_GREEN : COLOR_RED);
-	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS5), delta.IsAtBottoms[4] ? COLOR_GREEN : COLOR_RED);
-	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS6), delta.IsAtBottoms[5] ? COLOR_GREEN : COLOR_RED);
+	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS1), false ? COLOR_GREEN : COLOR_RED);
+	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS2), false ? COLOR_GREEN : COLOR_RED);
+	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS3), false ? COLOR_GREEN : COLOR_RED);
+	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS4), false ? COLOR_GREEN : COLOR_RED);
+	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS5), false ? COLOR_GREEN : COLOR_RED);
+	FillCtlColor(GetDlgItem(IDC_STATIC_STATUS6), false ? COLOR_GREEN : COLOR_RED);
 }
 
 void CECATSampleDlg::OnPaint() 
@@ -1251,24 +1246,18 @@ HCURSOR CECATSampleDlg::OnQueryDragIcon()
 void CECATSampleDlg::OnBTNInitialCard() 
 {
 	CString xx;
-	InitialFlag = delta.InitCard();
 	if (InitialFlag)
 	{
-		xx.Format(_T("%d"), delta.CardNo);
+		xx.Format(_T("%d"), 123);
 		((CComboBox*)GetDlgItem(IDC_CBO_CardNo))->AddString(xx);
 		((CComboBox*)GetDlgItem(IDC_CBO_CardNo))->SetCurSel(0);
 		((CButton *)GetDlgItem(IDC_BTN_FindSlave))->EnableWindow(TRUE);
 	}	
-	else
-		MessageBox(_T(INIT_FAIL_MESSAGE));
 }
 
 void CECATSampleDlg::OnBTNFindSlave() 
 {
-	if(delta.FindSlave() == true)
-		SetDlgItemInt(IDC_EDIT_SlaveNum, delta.SlaveNum);
-	else
-		MessageBox(_T(NOT_FIND_MOTION_MESSAGE));
+
 }
 
 void CECATSampleDlg::EanbleButton(int isenable)
@@ -1286,15 +1275,8 @@ void CECATSampleDlg::EanbleButton(int isenable)
 
 void CECATSampleDlg::OnTimer(UINT nIDEvent) 
 {
-	I16 rt;
-	U16 InitialDone;
 	CString statusStr;
 
-	if (isAutoInit == true)
-	{
-		isAutoInit = false;
-		OnBTNInitialCard();	
-	}
 	MoveValPoint();
 	RenderScene();
 	//RenderSwitchStatus();
@@ -1313,64 +1295,16 @@ void CECATSampleDlg::OnTimer(UINT nIDEvent)
 		poleLength[3], poleLength[4], poleLength[5]);
 	SetDlgItemText(IDC_EDIT_Sensor, statusStr);
 	
-	delta.CheckStatus(status);
-	if(InitialFlag == 0)
-	{
-		EanbleButton(0);
-	}
-	if(InitialFlag != 2)
-	{
-		rt = _ECAT_Master_Check_Initial_Done(delta.CardNo, &InitialDone);
-		if (rt == 0)
-		{
-			if (InitialDone == 0 && InitialFlag != 2)
-			{
-				SetDlgItemText(IDC_EDIT_InitialStatus, _T(STATUS_INIT_FINISH));
-				EanbleButton(1);
-				InitialFlag = 2;
-				Sleep(500);
-				OnChkSvon();
-				Sleep(2000);
-				if (lastStartStatus == 0){
-					delta.PowerOnSelfTest(lastStartStatus, lastStartPulse);
-				}		
-				else if(lastStartStatus == SIXDOF_STATUS_READY)
-				{
-					status = SIXDOF_STATUS_READY;
-				}
-				else
-					delta.PowerOnSelfTest(lastStartStatus, lastStartPulse);
-			}		
-			else if (InitialDone == 1)
-			{
-				SetDlgItemText(IDC_EDIT_InitialStatus, _T(STATUS_INIT_ING));
-				EanbleButton(0);
-			}	
-			else if (InitialDone == 99)
-			{
-				EanbleButton(0);
-				SetDlgItemText(IDC_EDIT_InitialStatus, _T(STATUS_INIT_FAIL));
-			}
-			else
-			{
-
-			}			
-		}
-	}	
 	CDialog::OnTimer(nIDEvent);
 }
 
 void CECATSampleDlg::OnChkSvon() 
 {
-	delta.ServoAllOnOff(true);
+	
 }
 
 void CECATSampleDlg::OnOK() 
 {
-	delta.ServoStop();
-	Sleep(100);
-	delta.Close();
-
 	CDialog::OnOK();
 }
 
@@ -1415,7 +1349,6 @@ void CECATSampleDlg::OnBnClickedBtnMiddle()
 	}
 	status = SIXDOF_STATUS_READY;
 	sendStatus = CONTROL_COMMAND_STOP;
-	delta.MoveToZeroPulseNumber();
 }
 
 void CECATSampleDlg::OnBnClickedBtnStart()
@@ -1444,10 +1377,6 @@ void CECATSampleDlg::OnCommandStopme()
 		return;
 	}
 	closeDataThread = true;
-	//Sleep(100);
-	//delta.ServoStop();
-	//Sleep(100);
-	//delta.MoveToZeroPulseNumber();
 	status = SIXDOF_STATUS_READY;
 	sendStatus = CONTROL_COMMAND_STOP;
 	ResetDefaultData(&data);
@@ -1457,13 +1386,8 @@ void CECATSampleDlg::OnBnClickedBtnStopme()
 {
 	stopSCurve = true;
 	closeDataThread = true;
-	//delta.ServoStop();
-	//Sleep(100);
-	//delta.DisableDDA();
-	//delta.ServoAllOnOff(true);
 	if (status == SIXDOF_STATUS_RUN)
 	{
-		//delta.MoveToZeroPulseNumber();
 		status = SIXDOF_STATUS_READY;
 	}
 	sendStatus = CONTROL_COMMAND_STOP;
@@ -1481,16 +1405,11 @@ void CECATSampleDlg::OnBnClickedBtnPause()
 		if (isPaused == false)
 		{
 			closeDataThread = true;
-			delta.ServoStop();
-			Sleep(50);
-			delta.DisableDDA();
-			delta.ServoAllOnOff(true);
 			isPaused = true;
 		}
 		else
 		{
 			closeDataThread = false;
-			delta.EnableDDA();
 			isPaused = false;
 		}
 #if _DEBUG
@@ -1512,24 +1431,13 @@ void CECATSampleDlg::OnBnClickedBtnDown()
 #endif
 		return;
 	}
-	//delta.ServoStop();
-	//Sleep(100);
 	status = SIXDOF_STATUS_ISFALLING;
 	sendStatus = CONTROL_COMMAND_DOWN;
-	//delta.DownUsingHomeMode();
 }
 
 void CECATSampleDlg::OnBnClickedOk()
 {
 	CloseThread();
-	delta.ServoStop();
-	Sleep(100);
-	delta.DisableDDA();
-	Sleep(100);
-	delta.ServoAllOnOff(false);
-	delta.LockServo();
-	Sleep(10);
-	delta.Close();
 	CDialog::OnOK();
 }
 
@@ -1545,21 +1453,17 @@ void CECATSampleDlg::OnBnClickedBtnDisconnect()
 
 void CECATSampleDlg::OnBnClickedBtnResetme()
 {
-	delta.ResetStatus();
+
 }
 
 void CECATSampleDlg::OnBnClickedBtnSingleUp()
 {
 	auto index = ((CComboBox*)GetDlgItem(IDC_CBO_SingleNo))->GetCurSel();
-	delta.ResetAlarmSingle(index);
-	delta.ServoSingleMove(index, DIS_PER_R, 0);
 }
 
 void CECATSampleDlg::OnBnClickedBtnSingleDown()
 {
 	auto index = ((CComboBox*)GetDlgItem(IDC_CBO_SingleNo))->GetCurSel();
-	delta.ResetAlarmSingle(index);
-	delta.ServoSingleMove(index, -DIS_PER_R, 0);
 }
 
 void CECATSampleDlg::RunTestMode()
@@ -1636,21 +1540,11 @@ void CECATSampleDlg::RunTestMode()
 	isCsp = false;
 	if (isCsp == false)
 	{
-		delta.EnableDDA();
+		
 	}
-	delta.ServoStop();
-	//Sleep(100);
-	delta.RenewNowPulse();
-	delta.ResetStatus();
-	delta.GetMotionAveragePulse();
 	isTest = true;
 	t = 0;
 	dataChartTime = 0;
-
-	time_t currtime = time(NULL);
-	struct tm* p = gmtime(&currtime);
-	sprintf_s(fileName, "./datas/pathdata%d-%d-%d-%d-%d-%d.txt", p->tm_year + 1990, p->tm_mon + 1,
-		p->tm_mday, p->tm_hour + 8, p->tm_min, p->tm_sec);
 
 	closeDataThread = false;
 	isStart = true;
@@ -1808,11 +1702,6 @@ void CECATSampleDlg::RunJudgeRangeTestMode()
 	isTest = true;
 	t = 0;
 	dataChartTime = 0;
-
-	time_t currtime = time(NULL);
-	struct tm* p = gmtime(&currtime);
-	sprintf_s(fileName, "./datas/pathdata%d-%d-%d-%d-%d-%d.txt", p->tm_year + 1990, p->tm_mon + 1,
-		p->tm_mday, p->tm_hour + 8, p->tm_min, p->tm_sec);
 
 	closeDataThread = false;
 	isStart = true;

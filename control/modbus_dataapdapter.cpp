@@ -6,7 +6,6 @@ namespace SixdofModbus
 {
 	#define BUFFER_MAX_COUNT 200
 
-	static double scale = 1000.0;
 	static uint16_t dataBuffers[BUFFER_MAX_COUNT];
 
 	static inline int16_t ExchangeInt16Bit(int16_t data)
@@ -21,62 +20,25 @@ namespace SixdofModbus
 		return (int32_t)((b[0] << 24) + (b[1] << 16) + (b[2] << 8) + b[3]);
 	}
 
-	void ModbusPackageInit(ModbusPackage * data)
+	static void ModbusSetFloat32ToReg(uint16_t * regs, int index, float val)
 	{
-		data->Head = MODBUS_DATA_HEAD;
-		data->Tail = MODBUS_DATA_TAIL;
+		static uint8_t b[4] = {0};
+		memmove(b, &val, sizeof(uint8_t) * 4);
+		memmove(regs + index, b, sizeof(uint16_t) * 1);
+		memmove(regs + index + 1, b + 2, sizeof(uint16_t) * 1);
 	}
 
-	void ModbusPackageSetData(ModbusPackage * data, 
-		double x, double y, double z, double roll, double pitch, double yaw)
+	static void ModbusSetRegToFloat32(uint16_t * regs, int index, float* val)
 	{
-		ModbusPackageInit(data);	
-		data->X = (int32_t)(x * scale);
-		data->Y = (int32_t)(y * scale);
-		data->Z = (int32_t)(z * scale);
-		data->Roll = (int32_t)(roll * scale);
-		data->Pitch = (int32_t)(pitch * scale);
-		data->Yaw = (int32_t)(yaw * scale);
-	}
-
-	void ModbusDoExchange(ModbusPackage * data)
-	{
-		ExchangeInt16Bit(data->Head);
-		ExchangeInt16Bit(data->Tail);
-		ExchangeInt16Bit(data->Time);
-		ExchangeInt16Bit(data->PackageCount);
-
-		ExchangeInt16Bit(data->X);
-		ExchangeInt16Bit(data->Y);
-		ExchangeInt16Bit(data->Z);
-		ExchangeInt16Bit(data->Roll);
-		ExchangeInt16Bit(data->Pitch);
-		ExchangeInt16Bit(data->Yaw);
-
-		ExchangeInt16Bit(data->XSpeed);
-		ExchangeInt16Bit(data->YSpeed);
-		ExchangeInt16Bit(data->ZSpeed);
-		ExchangeInt16Bit(data->RollSpeed);
-		ExchangeInt16Bit(data->PitchSpeed);
-		ExchangeInt16Bit(data->YawSpeed);
-
-		ExchangeInt16Bit(data->XAcc);
-		ExchangeInt16Bit(data->YAcc);
-		ExchangeInt16Bit(data->ZAcc);
-		ExchangeInt16Bit(data->RollAcc);
-		ExchangeInt16Bit(data->PitchAcc);
-		ExchangeInt16Bit(data->YawAcc);
-
-		ExchangeInt16Bit(data->Reseverd1);
-		ExchangeInt16Bit(data->Reseverd2);
-		ExchangeInt16Bit(data->Reseverd3);
-		ExchangeInt16Bit(data->Reseverd4);
+		static int8_t b[4] = {0};
+		memmove(b, regs + index, sizeof(uint16_t));
+		memmove(b + 2, regs + index + 1, sizeof(uint16_t));
+		memmove(val, b, sizeof(float) * 1);
 	}
 
 	void ModbusDataAdapter::DataInit()
 	{
-		ModbusPackageInit(&data);
-		bufferLength = sizeof(ModbusPackage) / 2;
+		
 	}
 
 	void ModbusDataAdapter::ModbusInit()
@@ -95,54 +57,98 @@ namespace SixdofModbus
 	{
 		if (modbus == nullptr)
 			return;
-		data.ControlCommand = (uint8_t)command;
-		data.X = (int16_t)(roaddata.Position.X / DATA_SCALE);
-		data.Y = (int16_t)(roaddata.Position.Y / DATA_SCALE);
-		data.Z = (int16_t)(roaddata.Position.Z / DATA_SCALE);
-		data.Roll = (int16_t)(roaddata.Position.Roll / DATA_SCALE);
-		data.Pitch = (int16_t)(roaddata.Position.Pitch / DATA_SCALE);
-		data.Yaw = (int16_t)(roaddata.Position.Yaw / DATA_SCALE);
-
-		data.XSpeed = (int16_t)(roaddata.Speed.X / DATA_SCALE);
-		data.YSpeed = (int16_t)(roaddata.Speed.Y / DATA_SCALE);
-		data.ZSpeed = (int16_t)(roaddata.Speed.Z / DATA_SCALE);
-		data.RollSpeed = (int16_t)(roaddata.Speed.Roll / DATA_SCALE);
-		data.PitchSpeed = (int16_t)(roaddata.Speed.Pitch / DATA_SCALE);
-		data.YawSpeed = (int16_t)(roaddata.Speed.Yaw / DATA_SCALE);
-
-		data.XAcc = (int16_t)(roaddata.Acc.X / DATA_SCALE);
-		data.YAcc = (int16_t)(roaddata.Acc.Y / DATA_SCALE);
-		data.ZAcc = (int16_t)(roaddata.Acc.Z / DATA_SCALE);
-		data.RollAcc = (int16_t)(roaddata.Acc.Roll / DATA_SCALE);
-		data.PitchAcc = (int16_t)(roaddata.Acc.Pitch / DATA_SCALE);
-		data.YawAcc = (int16_t)(roaddata.Acc.Yaw / DATA_SCALE);
-		WriteData();
-		ReadData();
-		status = (SixdofStateEnum)data.SixdofState;
+		
 	}
 
-	void ModbusDataAdapter::ReadData()
+	void ModbusDataAdapter::SetIsEnableRoadData(bool isEnable)
 	{
 		if (modbus == nullptr)
 			return;
-		modbus_read_registers(modbus, 1 - (int)IS_PLC_COMM, bufferLength, dataBuffers);
-		memmove(&data, dataBuffers, sizeof(uint16_t) * bufferLength);
-		if (IS_PLC_BIGENDIAN == true)
+		modbus_write_bit(modbus, ENABLE_ROAD_DATA_MODBUS_ADDRESS, isEnable ? 1 : 0);
+	}
+
+	void ModbusDataAdapter::SetRoadData(RoadSpectrumData& roaddata)
+	{
+		if (modbus == nullptr)
+			return;
+		int i = 0;
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Position.X));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Position.Y));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Position.Z));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Position.Roll));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Position.Pitch));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Position.Yaw));
+
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Speed.X));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Speed.Y));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Speed.Z));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Speed.Roll));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Speed.Pitch));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Speed.Yaw));
+
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Acc.X));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Acc.Y));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Acc.Z));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Acc.Roll));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Acc.Pitch));
+		ModbusSetFloat32ToReg(dataBuffers, (i++) * 2, static_cast<float>(roaddata.Acc.Yaw));
+
+		modbus_write_registers(modbus, 
+			SIXDOF_ROAD_DATA_MODBUS_ADDRESS , SIXDOF_ROAD_DATA_MODBUS_REG_COUNT, dataBuffers);
+	}
+
+	void ModbusDataAdapter::SetPlatformStatus(ControlCommandEnum& command)
+	{
+		if (modbus == nullptr)
+			return;
+		switch (command)
 		{
-			ModbusDoExchange(&data);
+		// 0 空指令
+		case CONTROL_COMMAND_NONE:
+			break;
+		// 1 上升
+		case CONTROL_COMMAND_RISING:
+			break;
+		// 2 下降
+		case CONTROL_COMMAND_DOWN:
+			break;
+		// 3 路谱运行
+		case CONTROL_COMMAND_START_SIGNAL:
+			break;
+		// 4 正弦运行
+		case CONTROL_COMMAND_START_SINE:
+			break;
+		// 5 平台回中
+		case CONTROL_COMMAND_MIDDLE:
+			break;
+		// 6 平台停止并回中
+		case CONTROL_COMMAND_STOP:
+			break;
+		// 7 平台暂停运行
+		case CONTROL_COMMAND_PAUSE:
+			break;
+		// 8 平台恢复运行
+		case CONTROL_COMMAND_RECOVER:
+			break;
+		default:
+			break;
 		}
 	}
 
-	void ModbusDataAdapter::WriteData()
+	void ModbusDataAdapter::GetPlatformStatue(SixdofStateEnum& status)
 	{
 		if (modbus == nullptr)
 			return;
-		if (IS_PLC_BIGENDIAN == true)
-		{
-			ModbusDoExchange(&data);
-		}	
-		memmove(dataBuffers, &data, sizeof(uint16_t) * bufferLength);
-		modbus_write_registers(modbus, 1 - (int)IS_PLC_COMM, bufferLength, dataBuffers);
+		status = SIXDOF_STATE_NONE;
+	}
+
+	void ModbusDataAdapter::SetIsEnableAllAxis(bool isEnable)
+	{
+		if (modbus == nullptr)
+			return;
+		static uint8_t bits[SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT];
+		memset(bits, isEnable == true ? 0 : 1, sizeof(uint8_t) * SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT);
+		modbus_write_bits(modbus, SIXDOF_ACTIVE_AXIS_MODBUS_ADDRESS, SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT, bits);
 	}
 
 	ModbusDataAdapter::ModbusDataAdapter()
