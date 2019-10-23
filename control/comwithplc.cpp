@@ -5,7 +5,7 @@
 #define SELF_PORT         9000
 #define SELF_IP_STRING    "192.168.0.123"
 
-#define PLC_PORT        502
+#define PLC_PORT        8000
 #define PLC_IP_STRING   "192.168.0.22"
 
 #define PLC_BUFFER_LENGTH 1024
