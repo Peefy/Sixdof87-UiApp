@@ -15,6 +15,8 @@ using namespace Signal;
 #define PLC_DATA_HEAD  0xAABB
 #define PLC_DATA_TAIL  0xCCDD
 
+#define PLC_DATA_SCALE 0.001
+
 typedef enum 
 {
 	// 0 ø’÷∏¡Ó

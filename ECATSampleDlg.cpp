@@ -519,14 +519,14 @@ void SixdofControl()
 						{
 							EnterCriticalSection(&cs);
 							if (roadSpectrum.DataBuffer.size() > 0) {
-								auto roaddata = roadSpectrum.DataBuffer.front();
+								auto datatmp = roadSpectrum.DataBuffer.front();
 								roadSpectrum.DataBuffer.pop_front();
-								vision_x = roaddata.Position.X;
-								vision_y = roaddata.Position.Y;
-								vision_z = roaddata.Position.Z;
-								vision_roll = roaddata.Position.Roll;
-								vision_pitch = roaddata.Position.Pitch;
-								vision_yaw = roaddata.Position.Yaw;
+								vision_x = datatmp.Position.X;
+								vision_y = datatmp.Position.Y;
+								vision_z = datatmp.Position.Z;
+								vision_roll = datatmp.Position.Roll;
+								vision_pitch = datatmp.Position.Pitch;
+								vision_yaw = datatmp.Position.Yaw;
 							}
 							else {			
 								if (status != SIXDOF_STATUS_RUN) {
