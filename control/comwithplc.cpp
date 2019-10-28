@@ -142,7 +142,7 @@ void PLCDataAdapter::SendData(ControlCommandEnum command, const RoadSpectrumData
 	data.PitchAcc = (int32_t)(roaddata.Acc.Pitch / PLC_DATA_SCALE);
 	data.YawAcc = (int32_t)(roaddata.Acc.Yaw / PLC_DATA_SCALE);
 
-	PLCDataDoExchange(&data);
+	// PLCDataDoExchange(&data);
 
 	memcpy(buffer, &data, bufferLength);
 	udpClient.SendTo(PLCPort, ip, buffer, bufferLength);
