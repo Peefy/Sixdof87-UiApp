@@ -105,6 +105,7 @@ public:
 	afx_msg void OnBnClickedButtonProcessing();
 	afx_msg void OnBnClickedButtonReproduce();
 	afx_msg void OnBnClickedButtonData();
+	afx_msg void OnBnClickedButtonVisibleTest();
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -70,6 +70,36 @@ struct RoadSpectrumData
 		Acc.Pitch = pitch;	
 	}
 
+	void SetPositions(double* datas)  
+	{
+		Position.X = datas[0];
+		Position.Y = datas[1];
+		Position.Z = datas[2];
+		Position.Yaw = datas[3];
+		Position.Roll = datas[4];
+		Position.Pitch = datas[5];
+	}
+
+	void SetSpeeds(double* datas)  
+	{
+		Speed.X = datas[0];
+		Speed.Y = datas[1];
+		Speed.Z = datas[2];
+		Speed.Yaw = datas[3];
+		Speed.Roll = datas[4];
+		Speed.Pitch = datas[5];	
+	}
+
+	void SetAccs(double* datas)   
+	{
+		Acc.X = datas[0];
+		Acc.Y = datas[1];
+		Acc.Z = datas[2];
+		Acc.Yaw = datas[3];
+		Acc.Roll = datas[4];
+		Acc.Pitch = datas[5];	
+	}
+
 	string ToString() 
 	{
 		return Position.ToString() + 
@@ -82,10 +112,14 @@ struct RoadSpectrumData
 		return RoadSpectrumData();
 	}
 
-	// ser sixdof length = 6
+	// ser sixdof length = 18
 	static RoadSpectrumData FromArray(double* arr)
 	{
-		return RoadSpectrumData(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5]);
+		auto data = RoadSpectrumData();
+		data.SetPositions(arr);
+		data.SetSpeeds(arr + 6);
+		data.SetAccs(arr + 12);
+		return data;
 	}
 
 };

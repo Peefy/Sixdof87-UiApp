@@ -157,6 +157,7 @@ double sin_time_pulse_delta = 0.01;
 bool isStart = false;
 bool isAutoInit = true;
 bool isTest = true;
+bool isPlayData = false;
 bool isCosMode = false;
 
 double testVal[FREEDOM_NUM] = {0};
@@ -527,6 +528,8 @@ void SixdofControl()
 								vision_roll = datatmp.Position.Roll;
 								vision_pitch = datatmp.Position.Pitch;
 								vision_yaw = datatmp.Position.Yaw;
+								roaddata.Speed = datatmp.Speed;
+								roaddata.Acc = datatmp.Acc;
 							}
 							else {			
 								if (status != SIXDOF_STATUS_RUN) {
@@ -674,6 +677,7 @@ BEGIN_MESSAGE_MAP(CECATSampleDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_PROCESSING, &CECATSampleDlg::OnBnClickedButtonProcessing)
 	ON_BN_CLICKED(IDC_BUTTON_REPRODUCE, &CECATSampleDlg::OnBnClickedButtonReproduce)
 	ON_BN_CLICKED(IDC_BUTTON_DATA, &CECATSampleDlg::OnBnClickedButtonData)
+	ON_BN_CLICKED(IDC_BUTTON_VISIBLE_TEST, &CECATSampleDlg::OnBnClickedButtonVisibleTest)
 END_MESSAGE_MAP()
 
 void CECATSampleDlg::AppConfigInit()
@@ -1716,6 +1720,7 @@ void CECATSampleDlg::OnBnClickedButtonTest()
 #endif
 		return;
 	}
+	isPlayData = false;
 	status = SIXDOF_STATUS_RUN;
 	sendStatus = CONTROL_COMMAND_START_SINE;
 	RunJudgeRangeTestMode();
@@ -1822,6 +1827,7 @@ void CECATSampleDlg::OnBnClickedButtonReproduce()
 #endif
 	DataFromFile();
 	Sleep(20);
+	isPlayData = false;
 #if _DEBUG
 	status = SIXDOF_STATUS_READY;
 #endif
@@ -1832,9 +1838,16 @@ void CECATSampleDlg::OnBnClickedButtonData()
 {
 	DataFromFile();
 	isTest = false;
+	isPlayData = true;
 	sin_time_pulse = 0;
 	t = 0;
 	dataChartTime = 0;
 	closeDataThread = false;
 	isStart = true;	
+}
+
+
+void CECATSampleDlg::OnBnClickedButtonVisibleTest()
+{
+	
 }
