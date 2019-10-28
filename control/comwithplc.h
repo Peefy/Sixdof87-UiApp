@@ -17,6 +17,8 @@ using namespace Signal;
 
 #define PLC_DATA_SCALE 0.001
 
+#define IS_PLC_DATA_BIG_ENDIAH 0
+
 typedef enum 
 {
 	// 0 空指令
@@ -60,36 +62,36 @@ typedef enum
 #pragma pack (1)
 typedef struct
 {
-	uint16_t Head;          // 首校验 0xAABB
-	uint8_t SixdofState;    // 六自由度平台状态
-	uint8_t IsEnableData;   // 是否运行路谱
-	uint8_t IsTest;         // 是否是正弦运动
-	uint8_t ControlCommand; // 六自由度平台控制指令
-	uint16_t Time;          // Utc时间
-	uint16_t PackageCount;  // 包序，每发送一次+1
-	int32_t X;              // X线位移 0.001mm
-	int32_t Y;              // Y线位移 0.001mm
-	int32_t Z;              // Z线位移 0.001mm
-	int32_t Roll;           // 横滚角  0.001度
-	int32_t Pitch;          // 俯仰角  0.001度
-	int32_t Yaw;            // 偏航角  0.001度
-	int32_t XSpeed;         // X线位移速度 0.001mm/s
-	int32_t YSpeed;         // Y线位移速度 0.001mm/s
-	int32_t ZSpeed;         // Z线位移 0.001mm/s
-	int32_t RollSpeed;      // 横滚角速度  0.001度/s
-	int32_t PitchSpeed;     // 俯仰角速度  0.001度/s
-	int32_t YawSpeed;       // 偏航角速度  0.001度/s
-	int32_t XAcc;           // X线位移加速度 0.001mm/s^2
-	int32_t YAcc;           // Y线位移加速度 0.001mm/s^2
-	int32_t ZAcc;           // Z线位移加速度 0.001mm/s^2
-	int32_t RollAcc;        // 横滚角加速度  0.001度^2
-	int32_t PitchAcc;       // 俯仰角加速度  0.001度^2
-	int32_t YawAcc;         // 偏航角加速度  0.001度^2
-	uint16_t Reseverd1;     // 保留1
-	uint16_t Reseverd2;     // 保留2
-	uint16_t Reseverd3;     // 保留3
-	uint16_t Reseverd4;     // 保留4
-	uint16_t Tail;          //尾校验 0xCCDD
+	uint16_t Head;                  // 首校验 0xAABB
+	uint8_t SixdofState;            // 六自由度平台状态
+	uint8_t IsEnableData;           // 是否运行路谱
+	uint8_t IsTest;                 // 是否是正弦运动
+	uint8_t ControlCommand;         // 六自由度平台控制指令
+	uint16_t UtcTime;               // Utc时间
+	uint16_t PackageCount;          // 包序，每发送一次+1
+	int32_t X;                      // X线位移 0.001mm
+	int32_t Y;                      // Y线位移 0.001mm
+	int32_t Z;                      // Z线位移 0.001mm
+	int32_t Roll;                   // 横滚角  0.001度
+	int32_t Pitch;                  // 俯仰角  0.001度
+	int32_t Yaw;                    // 偏航角  0.001度
+	int32_t XSpeed;                 // X线位移速度 0.001mm/s
+	int32_t YSpeed;                 // Y线位移速度 0.001mm/s
+	int32_t ZSpeed;                 // Z线位移 0.001mm/s
+	int32_t RollSpeed;              // 横滚角速度  0.001度/s
+	int32_t PitchSpeed;             // 俯仰角速度  0.001度/s
+	int32_t YawSpeed;               // 偏航角速度  0.001度/s
+	int32_t XAcc;                   // X线位移加速度 0.001mm/s^2
+	int32_t YAcc;                   // Y线位移加速度 0.001mm/s^2
+	int32_t ZAcc;                   // Z线位移加速度 0.001mm/s^2
+	int32_t RollAcc;                // 横滚角加速度  0.001度^2
+	int32_t PitchAcc;               // 俯仰角加速度  0.001度^2
+	int32_t YawAcc;                 // 偏航角加速度  0.001度^2
+	uint16_t RoadDataTotalCount;    // 路谱数据点总数
+	uint16_t RoadDataIndex;         // 路谱数据点索引
+	uint16_t Reseverd1;             // 保留WORD 1
+	uint16_t Reseverd2;             // 保留WORD 2
+	uint16_t Tail;                  // 尾校验 0xCCDD
 }ComWiwhPLCPackage;
 #pragma pack () 
 
@@ -98,7 +100,7 @@ class PLCDataAdapter
 public:
 	PLCDataAdapter();
 	~PLCDataAdapter();
-	void SendData(ControlCommandEnum control, const RoadSpectrumData& roaddata);
+	void SendData(ControlCommandEnum control, const RoadSpectrumData& roaddata, int dataCount, int dataIndex);
 private:
 	int bufferLength;
 protected:

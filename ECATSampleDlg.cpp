@@ -192,6 +192,9 @@ int visionCtrlComand = 0;
 CRITICAL_SECTION cs;
 CRITICAL_SECTION ctrlCommandLockobj;
 
+// 路谱数据总数
+int roaddatacount = 0;
+int roaddataindex = 0;
 // 路谱数据
 Signal::RoadSpectrumData roaddata;
 // 路谱数据序列
@@ -212,8 +215,7 @@ DWORD WINAPI DataTransThread(LPVOID pParam)
 		start_time = GetTickCount();
 
 		SixdofControl();
-		plcData.SendData(sendStatus, roaddata);
-		//modbusdata.ExchangeData(sendStatus, sixdofState, roaddata);
+		plcData.SendData(sendStatus, roaddata, roaddatacount, roaddataindex);
 
 		DWORD end_time = GetTickCount();
 		runTime = end_time - start_time;		
@@ -553,6 +555,7 @@ void SixdofControl()
 							auto yaw = RANGE(MyMAFilter(&yawFiter, vision_yaw), -VISION_MAX_DEG, VISION_MAX_DEG);
 							z += (enableShock == true ? shockz : 0);
 							roaddata.SetPositions(x, y, z, yaw, roll, pitch);
+							roaddataindex += 1;
 							double* pulse_dugu = Control(x, y, z, roll, yaw, pitch);
 							for (auto ii = 0; ii < AXES_COUNT; ++ii)
 							{
@@ -677,7 +680,6 @@ BEGIN_MESSAGE_MAP(CECATSampleDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_PROCESSING, &CECATSampleDlg::OnBnClickedButtonProcessing)
 	ON_BN_CLICKED(IDC_BUTTON_REPRODUCE, &CECATSampleDlg::OnBnClickedButtonReproduce)
 	ON_BN_CLICKED(IDC_BUTTON_DATA, &CECATSampleDlg::OnBnClickedButtonData)
-	ON_BN_CLICKED(IDC_BUTTON_VISIBLE_TEST, &CECATSampleDlg::OnBnClickedButtonVisibleTest)
 END_MESSAGE_MAP()
 
 void CECATSampleDlg::AppConfigInit()
@@ -1810,6 +1812,8 @@ void CECATSampleDlg::DataFromFile()
 		}
 	}
 	fin.close();
+	roaddatacount = roadSpectrum.DataBuffer.size();
+	roaddataindex = 0;
 }
 
 // 路谱复现
@@ -1846,8 +1850,3 @@ void CECATSampleDlg::OnBnClickedButtonData()
 	isStart = true;	
 }
 
-
-void CECATSampleDlg::OnBnClickedButtonVisibleTest()
-{
-	
-}

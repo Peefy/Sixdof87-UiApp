@@ -52,12 +52,12 @@ static ComWiwhPLCPackage PLCPackageNew()
 	package.PackageCount = count++;
 	package.Reseverd1 = 0;
 	package.Reseverd2 = 0;
-	package.Reseverd3 = 0;
-	package.Reseverd4 = 0;
 	package.SixdofState = 1;
 	package.IsTest = 0;
-	package.Time = 0;
+	package.UtcTime = 0;
 	package.IsEnableData = 1;
+	package.RoadDataIndex = 0;
+	package.RoadDataTotalCount = 0;
 	return package;
 }
 
@@ -65,7 +65,7 @@ void PLCDataDoExchange(ComWiwhPLCPackage * data)
 {
 	data->Head = PLCExchangeUInt16Bit(data->Head);
 	data->Tail = PLCExchangeUInt16Bit(data->Tail);
-	data->Time = PLCExchangeUInt16Bit(data->Time);
+	data->UtcTime = PLCExchangeUInt16Bit(data->UtcTime);
 	data->PackageCount = PLCExchangeInt16Bit(data->PackageCount);
 
 	data->X = PLCExchangeInt32Bit(data->X);
@@ -89,10 +89,11 @@ void PLCDataDoExchange(ComWiwhPLCPackage * data)
 	data->PitchAcc = PLCExchangeInt32Bit(data->PitchAcc);
 	data->YawAcc = PLCExchangeInt32Bit(data->YawAcc);
 
+	data->RoadDataTotalCount = PLCExchangeUInt16Bit(data->RoadDataTotalCount);
+	data->RoadDataIndex = PLCExchangeUInt16Bit(data->RoadDataIndex);
+
 	data->Reseverd1 = PLCExchangeUInt16Bit(data->Reseverd1);
 	data->Reseverd2 = PLCExchangeUInt16Bit(data->Reseverd2);
-	data->Reseverd3 = PLCExchangeUInt16Bit(data->Reseverd3);
-	data->Reseverd4 = PLCExchangeUInt16Bit(data->Reseverd4);
 }
 
 void PLCDataAdapter::DataInit()
@@ -114,13 +115,16 @@ PLCDataAdapter::~PLCDataAdapter()
 {
 }
 
-void PLCDataAdapter::SendData(ControlCommandEnum command, const RoadSpectrumData& roaddata)
+void PLCDataAdapter::SendData(ControlCommandEnum command, const RoadSpectrumData& roaddata, int dataCount, int dataIndex)
 {
 	static char buffer[PLC_BUFFER_LENGTH];
 	static const char * ip = PLCIp.c_str();
 	ComWiwhPLCPackage data = PLCPackageNew();
 
 	data.ControlCommand = (uint8_t)command;
+	data.UtcTime = GetTickCount();
+	data.RoadDataTotalCount = dataCount;
+	data.RoadDataIndex = dataIndex;
 	data.X = (int32_t)(roaddata.Position.X / PLC_DATA_SCALE);
 	data.Y = (int32_t)(roaddata.Position.Y / PLC_DATA_SCALE);
 	data.Z = (int32_t)(roaddata.Position.Z / PLC_DATA_SCALE);
@@ -142,7 +146,9 @@ void PLCDataAdapter::SendData(ControlCommandEnum command, const RoadSpectrumData
 	data.PitchAcc = (int32_t)(roaddata.Acc.Pitch / PLC_DATA_SCALE);
 	data.YawAcc = (int32_t)(roaddata.Acc.Yaw / PLC_DATA_SCALE);
 
-	// PLCDataDoExchange(&data);
+#if IS_PLC_DATA_BIG_ENDIAH
+	PLCDataDoExchange(&data);
+#endif
 
 	memcpy(buffer, &data, bufferLength);
 	udpClient.SendTo(PLCPort, ip, buffer, bufferLength);

@@ -14,7 +14,7 @@
 
 #define IDC_STATIC_POSE_SHOW_TEXT      "姿态"
 #define IDC_STATIC_LENGTH_SHOW_TEXT    "缸长"
-#define IDC_STATIC_SENSOR_SHOW_TEXT    "视景"
+#define IDC_STATIC_SENSOR_SHOW_TEXT    "下位"
 
 #define IDC_STATIC_X_VAL_SHOW_TEXT     "纵向幅值"
 #define IDC_STATIC_Y_VAL_SHOW_TEXT     "横向幅值"
@@ -86,8 +86,8 @@
 #define IDC_STATIC_SWITCH_STATUS_SHOW_TEXT   "接近开关"
 #define IDC_STATIC_POLE_LENGTH_SHOW_TEXT     "缸伸长量(mm)"
 
-#define IDC_BUTTON_GENERATE_SHOW_TEXT  "路谱生成"
+#define IDC_BUTTON_GENERATE_SHOW_TEXT    "路谱生成"
 #define IDC_BUTTON_PROCESSING_SHOW_TEXT  "路谱处理"
-#define IDC_BUTTON_REPRODUCE_SHOW_TEXT  "路谱复现"
-#define IDC_BUTTON_DATA_SHOW_TEXT  "数据回放"
+#define IDC_BUTTON_REPRODUCE_SHOW_TEXT   "路谱复现"
+#define IDC_BUTTON_DATA_SHOW_TEXT        "数据回放"
 #endif

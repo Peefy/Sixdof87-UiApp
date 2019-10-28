@@ -8,8 +8,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-/////////////////////////////////////////////////////////////////////////////
-// CECATSampleDlg dialog
+
 
 class CECATSampleDlg : public CDialog
 {
@@ -105,10 +104,7 @@ public:
 	afx_msg void OnBnClickedButtonProcessing();
 	afx_msg void OnBnClickedButtonReproduce();
 	afx_msg void OnBnClickedButtonData();
-	afx_msg void OnBnClickedButtonVisibleTest();
 };
 
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_ECATSampleDLG_H__87C425E4_3161_4F6F_BAE6_700496040E60__INCLUDED_)
+#endif
