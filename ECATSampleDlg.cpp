@@ -81,7 +81,7 @@ using namespace SixdofModbus;
 #define PATH_DATA_USE_DDA 0
 #define IS_USE_MESSAGEBOX 1
 
-#define MAX_REPRODUCE_LINE 1000
+#define MAX_REPRODUCE_LINE 100000
 #define DATA_COL_NUM       18
 
 bool enableShock = ENABLE_SHOCK;
@@ -1798,7 +1798,7 @@ void CECATSampleDlg::DataFromFile()
 		return;
 	}
 	roadSpectrum.DataBuffer.clear();
-	while (!fin.eof() && readcount < MAX_REPRODUCE_LINE * DATA_COL_NUM)
+	while (!fin.eof() && (readcount < MAX_REPRODUCE_LINE * DATA_COL_NUM))
 	{
 		fin >> *ptr; 
 		ptr++;
