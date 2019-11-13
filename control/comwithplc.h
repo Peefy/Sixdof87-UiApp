@@ -95,12 +95,35 @@ typedef struct
 }ComWiwhPLCPackage;
 #pragma pack () 
 
+#pragma pack (1)
+typedef struct
+{
+	uint16_t Head;                  // 首校验 0xAABB  0 1
+	uint8_t SixdofState;            // 六自由度平台状态  2
+	uint8_t IsEnableData;           // 是否运行路谱 3
+	uint8_t IsTest;                 // 是否是正弦运动 4
+	uint8_t ControlCommand;         // 六自由度平台控制指令 5
+	uint16_t UtcTime;               // Utc时间 6 7
+	uint16_t PackageCount;          // 包序，每发送一次+1 8 9
+	int32_t X;                      // X线位移 0.001mm 10 11 12 13
+	int32_t Y;                      // Y线位移 0.001mm 14 15 16 17
+	int32_t Z;                      // Z线位移 0.001mm 18 19 20 21
+	int32_t Roll;                   // 横滚角  0.001度 22 23 24 25
+	int32_t Pitch;                  // 俯仰角  0.001度 26 27 28 29 
+	int32_t Yaw;                    // 偏航角  0.001度 30 31 32 33
+	uint16_t Reseverd1;             // 保留WORD 1
+	uint16_t Reseverd2;             // 保留WORD 2
+	uint16_t Tail;                  // 尾校验 0xCCDD
+}ComPackageFromPLC;
+#pragma pack () 
+
 class PLCDataAdapter
 {
 public:
 	PLCDataAdapter();
 	~PLCDataAdapter();
 	void SendData(ControlCommandEnum control, const RoadSpectrumData& roaddata, int dataCount, int dataIndex);
+	void RecieveData(RoadSpectrumData* road);
 private:
 	int bufferLength;
 protected:

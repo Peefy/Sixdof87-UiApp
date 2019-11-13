@@ -153,3 +153,8 @@ void PLCDataAdapter::SendData(ControlCommandEnum command, const RoadSpectrumData
 	memcpy(buffer, &data, bufferLength);
 	udpClient.SendTo(PLCPort, ip, buffer, bufferLength);
 }
+
+void PLCDataAdapter::RecieveData(RoadSpectrumData* road) 
+{
+
+}
