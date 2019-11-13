@@ -194,9 +194,12 @@ CRITICAL_SECTION ctrlCommandLockobj;
 
 // 路谱数据总数
 int roaddatacount = 0;
+// 路谱数据索引
 int roaddataindex = 0;
 // 路谱数据
 Signal::RoadSpectrumData roaddata;
+// 路谱数据
+Signal::RoadSpectrumData recdata;
 // 路谱数据序列
 Signal::RoadSpectrum roadSpectrum;
 // 控制PLC,注意PLC地址+1
@@ -216,6 +219,7 @@ DWORD WINAPI DataTransThread(LPVOID pParam)
 
 		SixdofControl();
 		plcData.SendData(sendStatus, roaddata, roaddatacount, roaddataindex);
+		// plcData.RecieveData(&recdata);
 
 		DWORD end_time = GetTickCount();
 		runTime = end_time - start_time;		

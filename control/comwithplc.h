@@ -102,7 +102,7 @@ typedef struct
 	uint8_t SixdofState;            // 六自由度平台状态  2
 	uint8_t IsEnableData;           // 是否运行路谱 3
 	uint8_t IsTest;                 // 是否是正弦运动 4
-	uint8_t ControlCommand;         // 六自由度平台控制指令 5
+	uint8_t StateCommand;         // 六自由度状态指令 5
 	uint16_t UtcTime;               // Utc时间 6 7
 	uint16_t PackageCount;          // 包序，每发送一次+1 8 9
 	int32_t X;                      // X线位移 0.001mm 10 11 12 13
@@ -126,6 +126,7 @@ public:
 	void RecieveData(RoadSpectrumData* road);
 private:
 	int bufferLength;
+	int recbufferLength;
 protected:
 	void DataInit();
 	int SelfPort;
