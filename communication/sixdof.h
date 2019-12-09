@@ -49,6 +49,7 @@
 
 #else
 
+
 //平台运动最大角度
 #define MAX_DEG 28.0
 #define DEG_SCALE 0.01
@@ -60,7 +61,7 @@
 //视景平台运动最大位移
 #define VISION_MAX_XYZ 600.0
 // 平台运动最大频率
-#define MAX_HZ 25
+#define MAX_HZ 10
 #define MAX_PHASE 360
 
 #define MAX_XYZ_ZERO_POS    25.0
@@ -99,12 +100,12 @@
 
 typedef enum
 {
-	SIXDOF_STATUS_BOTTOM,
-	SIXDOF_STATUS_READY,
-	SIXDOF_STATUS_MIDDLE,
-	SIXDOF_STATUS_RUN,
-	SIXDOF_STATUS_ISRISING,
-	SIXDOF_STATUS_ISFALLING,
+	SIXDOF_STATUS_BOTTOM,			//底部
+	SIXDOF_STATUS_READY,			//准备
+	SIXDOF_STATUS_MIDDLE,			//中位
+	SIXDOF_STATUS_RUN,				//运行
+	SIXDOF_STATUS_ISRISING,			//正在上升
+	SIXDOF_STATUS_ISFALLING,		//正在下降
 }SixDofPlatformStatus;
 
 extern char * SixDofStatusText[];

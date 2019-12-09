@@ -17,7 +17,7 @@ namespace SixdofModbus
 {
 
 #define MODBUS_SLAVE_PORT         9000
-#define MODBUS_SLAVE_IP_STRING    "192.168.0.123"
+#define MODBUS_SLAVE_IP_STRING   "192.168.0.123"//"127.0.0.1" 
 
 #define MODBUS_MASTER_PORT        502
 #define MODBUS_MASTER_IP_STRING   "192.168.0.22"
@@ -37,6 +37,8 @@ namespace SixdofModbus
 #define SIXDOF_SINE_DATA_MODBUS_REG_COUNT      (18)
 
 #define ENABLE_PLATFORM_MODBUS_ADDRESS         (1004 - IS_PLC_COMM)
+
+#define ENABLE_PLAT_MODBUS_ADDRESS             (1001 - IS_PLC_COMM)
 
 #define RESET_ERROR_MODBUS_ADDRESS             (1011 - IS_PLC_COMM)
 #define EMERGENCY_STOP_MODBUS_ADDRESS          (1012 - IS_PLC_COMM)
@@ -63,6 +65,7 @@ public:
 	~ModbusDataAdapter();
 	void ExchangeData(ControlCommandEnum& command, SixdofStateEnum& status, RoadSpectrumData& roaddata);
 	bool IsConnect;
+	void ModbusDataAdapter::SetIsEnablePlat(bool);
 protected:
 	modbus_t* modbus;
 private:

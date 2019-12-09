@@ -50,6 +50,7 @@
 
 #include "cwnds/panel.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -81,7 +82,7 @@ using namespace SixdofModbus;
 #define PATH_DATA_USE_DDA 0
 #define IS_USE_MESSAGEBOX 1
 
-#define MAX_REPRODUCE_LINE 100000
+#define MAX_REPRODUCE_LINE 1000
 #define DATA_COL_NUM       18
 
 bool enableShock = ENABLE_SHOCK;
@@ -194,12 +195,9 @@ CRITICAL_SECTION ctrlCommandLockobj;
 
 // 路谱数据总数
 int roaddatacount = 0;
-// 路谱数据索引
 int roaddataindex = 0;
 // 路谱数据
 Signal::RoadSpectrumData roaddata;
-// 路谱数据
-Signal::RoadSpectrumData recdata;
 // 路谱数据序列
 Signal::RoadSpectrum roadSpectrum;
 // 控制PLC,注意PLC地址+1
@@ -219,7 +217,6 @@ DWORD WINAPI DataTransThread(LPVOID pParam)
 
 		SixdofControl();
 		plcData.SendData(sendStatus, roaddata, roaddatacount, roaddataindex);
-		// plcData.RecieveData(&recdata);
 
 		DWORD end_time = GetTickCount();
 		runTime = end_time - start_time;		
@@ -667,6 +664,12 @@ BEGIN_MESSAGE_MAP(CECATSampleDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTN_Start, &CECATSampleDlg::OnBnClickedBtnStart)
 	ON_BN_CLICKED(IDC_BTN_StopMe, &CECATSampleDlg::OnBnClickedBtnStopme)
 	ON_BN_CLICKED(IDC_BTN_Down, &CECATSampleDlg::OnBnClickedBtnDown)
+	ON_BN_CLICKED(IDC_BTN_Pause, &CECATSampleDlg::OnBnClickedBtnPause)
+	ON_BN_CLICKED(IDC_BTN_EnableOn, &CECATSampleDlg::OnBnClickedBtnEnableOn)
+	ON_BN_CLICKED(IDC_BTN_EnableOff, &CECATSampleDlg::OnBnClickedBtnEnableOff)
+	ON_BN_CLICKED(IDC_BTN_ResetPlat, &CECATSampleDlg::OnBnClickedBtnResetPlat)
+	//ON_BN_CLICKED(IDC_BTN_Pause, &CECATSampleDlg::OnBnClickedBtnPause)
+	
 	ON_BN_CLICKED(IDOK, &CECATSampleDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BTN_CONNECT, &CECATSampleDlg::OnBnClickedBtnConnect)
 	ON_BN_CLICKED(IDC_BTN_Resetme, &CECATSampleDlg::OnBnClickedBtnResetme)
@@ -684,6 +687,9 @@ BEGIN_MESSAGE_MAP(CECATSampleDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_PROCESSING, &CECATSampleDlg::OnBnClickedButtonProcessing)
 	ON_BN_CLICKED(IDC_BUTTON_REPRODUCE, &CECATSampleDlg::OnBnClickedButtonReproduce)
 	ON_BN_CLICKED(IDC_BUTTON_DATA, &CECATSampleDlg::OnBnClickedButtonData)
+	ON_BN_CLICKED(IDC_BTN_EnableOn, &CECATSampleDlg::OnBnClickedBtnEnableOn)
+	ON_BN_CLICKED(IDC_BTN_EnableOff, &CECATSampleDlg::OnBnClickedBtnEnableOff)
+	ON_BN_CLICKED(IDC_BTN_ResetPlat, &CECATSampleDlg::OnBnClickedBtnResetPlat)
 END_MESSAGE_MAP()
 
 void CECATSampleDlg::AppConfigInit()
@@ -938,6 +944,10 @@ void CECATSampleDlg::AppInit()
 
 	GetDlgItem(IDC_STATIC_TEST)->SetWindowTextW(_T(IDC_STATIC_TEST_SHOW_TEXT));
 	GetDlgItem(IDC_BUTTON_TEST)->SetWindowTextW(_T(IDC_BUTTON_TEST_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_Pause)->SetWindowTextW(_T(IDC_BTN_Pause_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_EnableOn)->SetWindowTextW(_T(IDC_BTN_EnableOn_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_EnableOff)->SetWindowTextW(_T(IDC_BTN_EnableOff_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_ResetPlat)->SetWindowTextW(_T(IDC_BTN_ResetPlat_SHOW_TEXT));
 
 	GetDlgItem(IDC_STATIC_APP_STATUS)->SetWindowTextW(_T(CORPORATION_NAME));
 	GetDlgItem(IDC_STATIC_APP_TITLE)->SetWindowTextW(_T(APP_TITLE));
@@ -1278,6 +1288,7 @@ void CECATSampleDlg::EanbleButton(int isenable)
 	GetDlgItem(IDC_BTN_Start)->EnableWindow(isenable);
 	GetDlgItem(IDC_BTN_StopMe)->EnableWindow(isenable);
 	GetDlgItem(IDC_BTN_Down)->EnableWindow(isenable);
+	GetDlgItem(IDC_BTN_Pause)->EnableWindow(isenable);
 	GetDlgItem(IDC_BTN_Resetme)->EnableWindow(isenable);
 	GetDlgItem(IDC_BUTTON_TEST)->EnableWindow(isenable);
 	GetDlgItem(IDC_BUTTON_STOP_TEST)->EnableWindow(isenable);
@@ -1325,19 +1336,20 @@ void CECATSampleDlg::OnChkAbs()
 
 void CECATSampleDlg::OnBnClickedBtnRise()
 {	
-	if (status == SIXDOF_STATUS_READY)
+	sendStatus = CONTROL_COMMAND_RISING;
+/*	if (status == SIXDOF_STATUS_READY)
 	{
 		MessageBox(_T(SIXDOF_NOT_BOTTOM_AND_RISE_MESSAGE));
 	}
+*/
 	status = SIXDOF_STATUS_ISRISING;	
-	sendStatus = CONTROL_COMMAND_RISING;
 	Sleep(50);
 	status = SIXDOF_STATUS_READY;
 }
 
 void CECATSampleDlg::OnBnClickedBtnMiddle()
 {
-	if (stopAndMiddle == true)
+/*	if (stopAndMiddle == true)
 	{
 		if (status != SIXDOF_STATUS_READY)
 		{
@@ -1356,9 +1368,9 @@ void CECATSampleDlg::OnBnClickedBtnMiddle()
 #endif
 			return;
 		}
-	}
-	status = SIXDOF_STATUS_READY;
-	sendStatus = CONTROL_COMMAND_STOP;
+	}*/
+	sendStatus = CONTROL_COMMAND_MIDDLE;
+	status = SIXDOF_STATUS_READY;	
 }
 
 void CECATSampleDlg::OnBnClickedBtnStart()
@@ -1370,7 +1382,6 @@ void CECATSampleDlg::OnBnClickedBtnStart()
 #endif
 		return;
 	}
-	status = SIXDOF_STATUS_RUN;
 	sendStatus = CONTROL_COMMAND_START_SIGNAL;
 	isTest = false;
 	sin_time_pulse = 0;
@@ -1378,71 +1389,82 @@ void CECATSampleDlg::OnBnClickedBtnStart()
 	dataChartTime = 0;
 	closeDataThread = false;
 	isStart = true;	
+
 }
 
 void CECATSampleDlg::OnCommandStopme()
 {
+	sendStatus = CONTROL_COMMAND_STOP;
 	if (status != SIXDOF_STATUS_RUN)
 	{
 		return;
 	}
 	closeDataThread = true;
 	status = SIXDOF_STATUS_READY;
-	sendStatus = CONTROL_COMMAND_STOP;
 	ResetDefaultData(&data);
 }
 
 void CECATSampleDlg::OnBnClickedBtnStopme()
 {
+	sendStatus = CONTROL_COMMAND_STOP;
 	stopSCurve = true;
 	closeDataThread = true;
 	if (status == SIXDOF_STATUS_RUN)
 	{
 		status = SIXDOF_STATUS_READY;
 	}
-	sendStatus = CONTROL_COMMAND_STOP;
 	ResetDefaultData(&data);
 }
 
 bool isPaused = false;
 void CECATSampleDlg::OnBnClickedBtnPause()
 {
-#if _DEBUG
-#else
-	if (status == SIXDOF_STATUS_RUN)
-	{
-#endif
-		if (isPaused == false)
+		if (sendStatus != CONTROL_COMMAND_PAUSE)
 		{
-			closeDataThread = true;
-			isPaused = true;
+			sendStatus = CONTROL_COMMAND_PAUSE;
 		}
-		else
+		else if(sendStatus == CONTROL_COMMAND_PAUSE)
 		{
-			closeDataThread = false;
-			isPaused = false;
+			sendStatus = CONTROL_COMMAND_RECOVER;
 		}
-#if _DEBUG
-#else
-	}
-#endif
+//#if _DEBUG
+//#else
+//	if (status == SIXDOF_STATUS_RUN)
+//	{
+//#endif
+		//if (isPaused == false)
+		//{
+		//	sendStatus = CONTROL_COMMAND_PAUSE;
+		//	closeDataThread = true;
+//			isPaused = true;
+//		}
+//		else
+//		{
+//			sendStatus = CONTROL_COMMAND_RECOVER;
+//			closeDataThread = false;
+//			isPaused = false;
+//		}
+//#if _DEBUG
+//#else
+//	}
+//#endif
 }
 
 void CECATSampleDlg::OnBnClickedBtnDown()
 {	
-	if(status == SIXDOF_STATUS_ISRISING)
-	{
-		return;
-	}
-	if (status != SIXDOF_STATUS_READY)
-	{
-#if IS_USE_MESSAGEBOX
-		MessageBox(_T(SIXDOF_NOT_FALLING_MESSAGE));
-#endif
-		return;
-	}
-	status = SIXDOF_STATUS_ISFALLING;
+//	if(status == SIXDOF_STATUS_ISRISING)
+//	{
+//		return;
+//	}
+//	if (status != SIXDOF_STATUS_READY)
+//	{
+//#if IS_USE_MESSAGEBOX
+//		MessageBox(_T(SIXDOF_NOT_FALLING_MESSAGE));
+//#endif
+//		return;
+//	}
 	sendStatus = CONTROL_COMMAND_DOWN;
+//	status = SIXDOF_STATUS_ISFALLING;
 }
 
 void CECATSampleDlg::OnBnClickedOk()
@@ -1719,6 +1741,7 @@ void CECATSampleDlg::RunJudgeRangeTestMode()
 
 void CECATSampleDlg::OnBnClickedButtonTest()
 {
+	sendStatus = CONTROL_COMMAND_START_SINE;
 	if (status != SIXDOF_STATUS_READY)
 	{
 #if IS_USE_MESSAGEBOX
@@ -1728,7 +1751,6 @@ void CECATSampleDlg::OnBnClickedButtonTest()
 	}
 	isPlayData = false;
 	status = SIXDOF_STATUS_RUN;
-	sendStatus = CONTROL_COMMAND_START_SINE;
 	RunJudgeRangeTestMode();
 }
 
@@ -1802,7 +1824,7 @@ void CECATSampleDlg::DataFromFile()
 		return;
 	}
 	roadSpectrum.DataBuffer.clear();
-	while (!fin.eof() && (readcount < MAX_REPRODUCE_LINE * DATA_COL_NUM))
+	while (!fin.eof() && readcount < MAX_REPRODUCE_LINE * DATA_COL_NUM)
 	{
 		fin >> *ptr; 
 		ptr++;
@@ -1854,3 +1876,21 @@ void CECATSampleDlg::OnBnClickedButtonData()
 	isStart = true;	
 }
 
+//使能开
+void CECATSampleDlg::OnBnClickedBtnEnableOn()
+{
+	sendStatus = CONTROL_COMMAND_ENABLE_ON;
+}
+
+//使能关 
+void CECATSampleDlg::OnBnClickedBtnEnableOff()
+	
+{ 
+	
+	sendStatus = CONTROL_COMMAND_ENABLE_OFF;
+}
+//平台复位 
+void CECATSampleDlg::OnBnClickedBtnResetPlat()
+{
+	sendStatus = CONTROL_COMMAND_RESETPLAT;
+}

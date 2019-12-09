@@ -1,4 +1,4 @@
-
+﻿
 #include "stdafx.h"
 #include "modbus_dataapdapter.h"
 
@@ -103,32 +103,44 @@ namespace SixdofModbus
 			return;
 		switch (command)
 		{
-		// 0 ��ָ��
+		// 0 空指令
 		case CONTROL_COMMAND_NONE:
 			break;
-		// 1 ����
+		// 1 上升
 		case CONTROL_COMMAND_RISING:
 			break;
-		// 2 �½�
+		// 2 下降
 		case CONTROL_COMMAND_DOWN:
 			break;
-		// 3 ·������
+		// 3 路谱运行
 		case CONTROL_COMMAND_START_SIGNAL:
 			break;
-		// 4 ��������
+		// 4 正弦运行
 		case CONTROL_COMMAND_START_SINE:
 			break;
-		// 5 ƽ̨����
+		// 5 平台回中
 		case CONTROL_COMMAND_MIDDLE:
 			break;
-		// 6 ƽֹ̨ͣ������
+		// 6 平台停止并回中
 		case CONTROL_COMMAND_STOP:
 			break;
-		// 7 ƽ̨��ͣ����
+		// 7 平台暂停运行
 		case CONTROL_COMMAND_PAUSE:
 			break;
-		// 8 ƽ̨�ָ�����
+		// 8 平台恢复运行
 		case CONTROL_COMMAND_RECOVER:
+			break;
+		// 9 平台复位
+		case CONTROL_COMMAND_RESETPLAT:
+			break;
+		// 10 开使能
+		case CONTROL_COMMAND_ENABLE_ON:
+			break;
+		// 11 关使能
+		case CONTROL_COMMAND_ENABLE_OFF:
+			break;
+		// 12 跳出上限位
+		case CONTROL_COMMAND_OUT_UPPER_LIMIT:
 			break;
 		default:
 			break;
@@ -147,14 +159,15 @@ namespace SixdofModbus
 		if (modbus == nullptr)
 			return;
 		static uint8_t bits[SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT];
-		memset(bits, isEnable == true ? 0 : 1, sizeof(uint8_t) * SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT);
+		memset(bits, isEnable == true ? 0 : 1, sizeof(uint8_t) * SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT);     //清空一个结构类型的变量或数组	  
+/* 读取线圈状态取得一组逻辑线圈的当前状态（ON/OFF)  Reads the boolean status of bits and sets the array elements in the destination to TRUE or FALSE (single bits). */
 		modbus_write_bits(modbus, SIXDOF_ACTIVE_AXIS_MODBUS_ADDRESS, SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT, bits);
 	}
 
 	ModbusDataAdapter::ModbusDataAdapter()
 	{
 		DataInit();
-		//ModbusInit();
+		ModbusInit();				//1127
 	}
 
 	ModbusDataAdapter::~ModbusDataAdapter()

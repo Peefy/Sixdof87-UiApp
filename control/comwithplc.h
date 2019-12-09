@@ -38,7 +38,15 @@ typedef enum
 	// 7 平台暂停运行
 	CONTROL_COMMAND_PAUSE = 7,
 	// 8 平台恢复运行
-	CONTROL_COMMAND_RECOVER = 8
+	CONTROL_COMMAND_RECOVER = 8,
+	// 9 平台复位
+	CONTROL_COMMAND_RESETPLAT = 9,
+	// 10 开使能
+	CONTROL_COMMAND_ENABLE_ON = 10,
+	// 11 关使能
+	CONTROL_COMMAND_ENABLE_OFF = 11,
+	// 12 跳出上限位
+	CONTROL_COMMAND_OUT_UPPER_LIMIT = 12,
 }ControlCommandEnum;
 
 typedef enum 
@@ -57,29 +65,35 @@ typedef enum
 	SIXDOF_STATE_MIDDLE = 5,
 	// 6 平台暂停
 	SIXDOF_STATE_PAUSE = 6,
+	// 7 平台初始化
+	SIXDOF_STATE_INIT = 7,
+	// 8 告警
+	SIXDOF_STATE_ALARM = 8,
+	// 9 正在回原点
+	SIXDOF_STATE_RETURN_INIT = 9,
 }SixdofStateEnum;
-  
+
 #pragma pack (1)
 typedef struct
 {
-	uint16_t Head;                  // 首校验 0xAABB  0 1
-	uint8_t SixdofState;            // 六自由度平台状态  2
-	uint8_t IsEnableData;           // 是否运行路谱 3
-	uint8_t IsTest;                 // 是否是正弦运动 4
-	uint8_t ControlCommand;         // 六自由度平台控制指令 5
-	uint16_t UtcTime;               // Utc时间 6 7
-	uint16_t PackageCount;          // 包序，每发送一次+1 8 9
-	int32_t X;                      // X线位移 0.001mm 10 11 12 13
-	int32_t Y;                      // Y线位移 0.001mm 14 15 16 17
-	int32_t Z;                      // Z线位移 0.001mm 18 19 20 21
-	int32_t Roll;                   // 横滚角  0.001度 22 23 24 25
-	int32_t Pitch;                  // 俯仰角  0.001度 26 27 28 29 
-	int32_t Yaw;                    // 偏航角  0.001度 30 31 32 33
-	int32_t XSpeed;                 // X线位移速度 0.001mm/s 34 35 36 37
-	int32_t YSpeed;                 // Y线位移速度 0.001mm/s 38 39 40 41
-	int32_t ZSpeed;                 // Z线位移 0.001mm/s     42 43 44 45
-	int32_t RollSpeed;              // 横滚角速度  0.001度/s  46 47 48 49
-	int32_t PitchSpeed;             // 俯仰角速度  0.001度/s  50 51 52 53
+	uint16_t Head;                  // 首校验 0xAABB
+	uint8_t SixdofState;            // 六自由度平台状态
+	uint8_t IsEnableData;           // 是否运行路谱
+	uint8_t IsTest;                 // 是否是正弦运动
+	uint8_t ControlCommand;         // 六自由度平台控制指令
+	uint16_t UtcTime;               // Utc时间
+	uint16_t PackageCount;          // 包序，每发送一次+1
+	int32_t X;                      // X线位移 0.001mm
+	int32_t Y;                      // Y线位移 0.001mm
+	int32_t Z;                      // Z线位移 0.001mm
+	int32_t Roll;                   // 横滚角  0.001度
+	int32_t Pitch;                  // 俯仰角  0.001度
+	int32_t Yaw;                    // 偏航角  0.001度
+	int32_t XSpeed;                 // X线位移速度 0.001mm/s
+	int32_t YSpeed;                 // Y线位移速度 0.001mm/s
+	int32_t ZSpeed;                 // Z线位移 0.001mm/s
+	int32_t RollSpeed;              // 横滚角速度  0.001度/s
+	int32_t PitchSpeed;             // 俯仰角速度  0.001度/s
 	int32_t YawSpeed;               // 偏航角速度  0.001度/s
 	int32_t XAcc;                   // X线位移加速度 0.001mm/s^2
 	int32_t YAcc;                   // Y线位移加速度 0.001mm/s^2
@@ -95,38 +109,14 @@ typedef struct
 }ComWiwhPLCPackage;
 #pragma pack () 
 
-#pragma pack (1)
-typedef struct
-{
-	uint16_t Head;                  // 首校验 0xAABB  0 1
-	uint8_t SixdofState;            // 六自由度平台状态  2
-	uint8_t IsEnableData;           // 是否运行路谱 3
-	uint8_t IsTest;                 // 是否是正弦运动 4
-	uint8_t StateCommand;         // 六自由度状态指令 5
-	uint16_t UtcTime;               // Utc时间 6 7
-	uint16_t PackageCount;          // 包序，每发送一次+1 8 9
-	int32_t X;                      // X线位移 0.001mm 10 11 12 13
-	int32_t Y;                      // Y线位移 0.001mm 14 15 16 17
-	int32_t Z;                      // Z线位移 0.001mm 18 19 20 21
-	int32_t Roll;                   // 横滚角  0.001度 22 23 24 25
-	int32_t Pitch;                  // 俯仰角  0.001度 26 27 28 29 
-	int32_t Yaw;                    // 偏航角  0.001度 30 31 32 33
-	uint16_t Reseverd1;             // 保留WORD 1
-	uint16_t Reseverd2;             // 保留WORD 2
-	uint16_t Tail;                  // 尾校验 0xCCDD
-}ComPackageFromPLC;
-#pragma pack () 
-
 class PLCDataAdapter
 {
 public:
 	PLCDataAdapter();
 	~PLCDataAdapter();
 	void SendData(ControlCommandEnum control, const RoadSpectrumData& roaddata, int dataCount, int dataIndex);
-	void RecieveData(RoadSpectrumData* road);
 private:
 	int bufferLength;
-	int recbufferLength;
 protected:
 	void DataInit();
 	int SelfPort;

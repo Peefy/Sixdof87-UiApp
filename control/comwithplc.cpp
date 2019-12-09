@@ -3,10 +3,11 @@
 #include "comwithplc.h"
 
 #define SELF_PORT         9000
-#define SELF_IP_STRING    "192.168.0.123"
+//#define SELF_IP_STRING    "127.0.0.1"        // "192.168.0.123"  
+#define SELF_IP_STRING       "192.168.0.123"  
 
 #define PLC_PORT        8000
-#define PLC_IP_STRING   "192.168.0.22"
+#define PLC_IP_STRING        "192.168.0.22"
 
 #define PLC_BUFFER_LENGTH 1024
 
@@ -96,28 +97,9 @@ void PLCDataDoExchange(ComWiwhPLCPackage * data)
 	data->Reseverd2 = PLCExchangeUInt16Bit(data->Reseverd2);
 }
 
-void PLCDataDoExchange(ComPackageFromPLC * data)
-{
-	data->Head = PLCExchangeUInt16Bit(data->Head);
-	data->Tail = PLCExchangeUInt16Bit(data->Tail);
-	data->UtcTime = PLCExchangeUInt16Bit(data->UtcTime);
-	data->PackageCount = PLCExchangeInt16Bit(data->PackageCount);
-
-	data->X = PLCExchangeInt32Bit(data->X);
-	data->Y = PLCExchangeInt32Bit(data->Y);
-	data->Z = PLCExchangeInt32Bit(data->Z);
-	data->Roll = PLCExchangeInt32Bit(data->Roll);
-	data->Pitch = PLCExchangeInt32Bit(data->Pitch);
-	data->Yaw = PLCExchangeInt32Bit(data->Yaw);
-
-	data->Reseverd1 = PLCExchangeUInt16Bit(data->Reseverd1);
-	data->Reseverd2 = PLCExchangeUInt16Bit(data->Reseverd2);
-}
-
 void PLCDataAdapter::DataInit()
 {
 	bufferLength = sizeof(ComWiwhPLCPackage);
-	recbufferLength = sizeof(ComPackageFromPLC);
 	SelfPort = SELF_PORT;
 	PLCPort = PLC_PORT;
 	SelfIp = SELF_IP_STRING;
@@ -171,21 +153,4 @@ void PLCDataAdapter::SendData(ControlCommandEnum command, const RoadSpectrumData
 
 	memcpy(buffer, &data, bufferLength);
 	udpClient.SendTo(PLCPort, ip, buffer, bufferLength);
-}
-
-void PLCDataAdapter::RecieveData(RoadSpectrumData* road) 
-{
-	static char recbuffer[PLC_BUFFER_LENGTH];
-	static ComPackageFromPLC recdata;
-	udpClient.RecieveFrom(recbuffer);
-	memcpy(&recdata, recbuffer, recbufferLength);
-#if IS_PLC_DATA_BIG_ENDIAH
-	PLCDataDoExchange(&recdata);
-#endif
-	if (recdata.Head == PLC_DATA_HEAD && recdata.Tail == PLC_DATA_TAIL)
-	{
-		road->SetPositions(recdata.X * PLC_DATA_SCALE, recdata.Y * PLC_DATA_SCALE, 
-			recdata.Z * PLC_DATA_SCALE, recdata.Yaw * PLC_DATA_SCALE, 
-			recdata.Roll * PLC_DATA_SCALE, recdata.Pitch * PLC_DATA_SCALE);
-	}
 }

@@ -46,11 +46,15 @@
 
 #define IDC_STATIC_TEST_SHOW_TEXT      "测试(位移单位:1mm, 角度单位:1°, 频率单位:1Hz, 相位单位:1°)"
 #define IDC_BUTTON_TEST_SHOW_TEXT      "运行测试"
+#define IDC_BTN_Pause_SHOW_TEXT      "暂停/恢复"
+#define IDC_BTN_EnableOn_SHOW_TEXT      "使能开"
+#define IDC_BTN_EnableOff_SHOW_TEXT      "使能关"
+#define IDC_BTN_ResetPlat_SHOW_TEXT      "平台复位"
 
 #define CORPORATION_NAME "北京市星光凯明动感仿真模拟器中心"
 
 //#define APP_TITLE "大型特种车驾驶模拟训练系统"
-#define APP_TITLE ""
+#define APP_TITLE "       六 自 由 度 摇 摆 台"
 #define APP_TITLE_FONT_SIZE 240
 
 #define CHART_TITLE             "位姿信息"
