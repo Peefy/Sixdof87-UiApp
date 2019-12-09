@@ -665,10 +665,7 @@ BEGIN_MESSAGE_MAP(CECATSampleDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTN_StopMe, &CECATSampleDlg::OnBnClickedBtnStopme)
 	ON_BN_CLICKED(IDC_BTN_Down, &CECATSampleDlg::OnBnClickedBtnDown)
 	ON_BN_CLICKED(IDC_BTN_Pause, &CECATSampleDlg::OnBnClickedBtnPause)
-	ON_BN_CLICKED(IDC_BTN_EnableOn, &CECATSampleDlg::OnBnClickedBtnEnableOn)
-	ON_BN_CLICKED(IDC_BTN_EnableOff, &CECATSampleDlg::OnBnClickedBtnEnableOff)
-	ON_BN_CLICKED(IDC_BTN_ResetPlat, &CECATSampleDlg::OnBnClickedBtnResetPlat)
-	//ON_BN_CLICKED(IDC_BTN_Pause, &CECATSampleDlg::OnBnClickedBtnPause)
+
 	
 	ON_BN_CLICKED(IDOK, &CECATSampleDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BTN_CONNECT, &CECATSampleDlg::OnBnClickedBtnConnect)
@@ -687,9 +684,6 @@ BEGIN_MESSAGE_MAP(CECATSampleDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_PROCESSING, &CECATSampleDlg::OnBnClickedButtonProcessing)
 	ON_BN_CLICKED(IDC_BUTTON_REPRODUCE, &CECATSampleDlg::OnBnClickedButtonReproduce)
 	ON_BN_CLICKED(IDC_BUTTON_DATA, &CECATSampleDlg::OnBnClickedButtonData)
-	ON_BN_CLICKED(IDC_BTN_EnableOn, &CECATSampleDlg::OnBnClickedBtnEnableOn)
-	ON_BN_CLICKED(IDC_BTN_EnableOff, &CECATSampleDlg::OnBnClickedBtnEnableOff)
-	ON_BN_CLICKED(IDC_BTN_ResetPlat, &CECATSampleDlg::OnBnClickedBtnResetPlat)
 END_MESSAGE_MAP()
 
 void CECATSampleDlg::AppConfigInit()
@@ -944,10 +938,13 @@ void CECATSampleDlg::AppInit()
 
 	GetDlgItem(IDC_STATIC_TEST)->SetWindowTextW(_T(IDC_STATIC_TEST_SHOW_TEXT));
 	GetDlgItem(IDC_BUTTON_TEST)->SetWindowTextW(_T(IDC_BUTTON_TEST_SHOW_TEXT));
-	GetDlgItem(IDC_BTN_Pause)->SetWindowTextW(_T(IDC_BTN_Pause_SHOW_TEXT));
-	GetDlgItem(IDC_BTN_EnableOn)->SetWindowTextW(_T(IDC_BTN_EnableOn_SHOW_TEXT));
-	GetDlgItem(IDC_BTN_EnableOff)->SetWindowTextW(_T(IDC_BTN_EnableOff_SHOW_TEXT));
-	GetDlgItem(IDC_BTN_ResetPlat)->SetWindowTextW(_T(IDC_BTN_ResetPlat_SHOW_TEXT));
+
+	GetDlgItem(IDC_BTN_Middle)->SetWindowTextW(_T(IDC_BTN_Middle_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_StopMe)->SetWindowTextW(_T(IDC_BTN_StopMe_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_CONNECT)->SetWindowTextW(_T(IDC_BTN_CONNECT_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_DISCONNECT)->SetWindowTextW(_T(IDC_BTN_DISCONNECT_SHOW_TEXT));
+	GetDlgItem(IDC_CHK_SVON)->SetWindowTextW(_T(IDC_CHK_SVON_SHOW_TEXT));
+	GetDlgItem(IDC_BTN_Resetme)->SetWindowTextW(_T(IDC_BTN_Resetme_SHOW_TEXT));
 
 	GetDlgItem(IDC_STATIC_APP_STATUS)->SetWindowTextW(_T(CORPORATION_NAME));
 	GetDlgItem(IDC_STATIC_APP_TITLE)->SetWindowTextW(_T(APP_TITLE));
@@ -1020,10 +1017,10 @@ BOOL CECATSampleDlg::PreTranslateMessage(MSG* pMsg)
 			GetDlgItem(IDC_EDIT_SlaveNum)->ShowWindow(isShowSingleUpDown);
 			GetDlgItem(IDC_CBO_SingleNo)->ShowWindow(isShowSingleUpDown);
 
-			GetDlgItem(IDC_CHK_SVON)->ShowWindow(isShowSingleUpDown);
-			GetDlgItem(IDC_BTN_Resetme)->ShowWindow(isShowSingleUpDown);
-			GetDlgItem(IDC_BTN_CONNECT)->ShowWindow(isShowSingleUpDown);
-			GetDlgItem(IDC_BTN_DISCONNECT)->ShowWindow(isShowSingleUpDown);
+			//GetDlgItem(IDC_CHK_SVON)->ShowWindow(isShowSingleUpDown);
+			//GetDlgItem(IDC_BTN_Resetme)->ShowWindow(isShowSingleUpDown);
+			//GetDlgItem(IDC_BTN_CONNECT)->ShowWindow(isShowSingleUpDown);
+			//GetDlgItem(IDC_BTN_DISCONNECT)->ShowWindow(isShowSingleUpDown);
 
 			GetDlgItem(IDC_BTN_InitialCard)->ShowWindow(isShowSingleUpDown);
 			GetDlgItem(IDC_STATIC)->ShowWindow(isShowSingleUpDown);
@@ -1288,7 +1285,7 @@ void CECATSampleDlg::EanbleButton(int isenable)
 	GetDlgItem(IDC_BTN_Start)->EnableWindow(isenable);
 	GetDlgItem(IDC_BTN_StopMe)->EnableWindow(isenable);
 	GetDlgItem(IDC_BTN_Down)->EnableWindow(isenable);
-	GetDlgItem(IDC_BTN_Pause)->EnableWindow(isenable);
+	//GetDlgItem(IDC_BTN_Pause)->EnableWindow(isenable);
 	GetDlgItem(IDC_BTN_Resetme)->EnableWindow(isenable);
 	GetDlgItem(IDC_BUTTON_TEST)->EnableWindow(isenable);
 	GetDlgItem(IDC_BUTTON_STOP_TEST)->EnableWindow(isenable);
@@ -1316,13 +1313,13 @@ void CECATSampleDlg::OnTimer(UINT nIDEvent)
 		poleLength[3], poleLength[4], poleLength[5]);
 	SetDlgItemText(IDC_EDIT_Sensor, statusStr);
 	
+	statusStr.Format(_T("平台状态:%d"), 
+		status);
+	SetDlgItemText(IDC_STATIC_PLAT_STATUS, statusStr);
+
 	CDialog::OnTimer(nIDEvent);
 }
 
-void CECATSampleDlg::OnChkSvon() 
-{
-	
-}
 
 void CECATSampleDlg::OnOK() 
 {
@@ -1345,32 +1342,6 @@ void CECATSampleDlg::OnBnClickedBtnRise()
 	status = SIXDOF_STATUS_ISRISING;	
 	Sleep(50);
 	status = SIXDOF_STATUS_READY;
-}
-
-void CECATSampleDlg::OnBnClickedBtnMiddle()
-{
-/*	if (stopAndMiddle == true)
-	{
-		if (status != SIXDOF_STATUS_READY)
-		{
-#if IS_USE_MESSAGEBOX
-			MessageBox(_T(SIXDOF_NOT_MIDDLE_MESSAGE));
-#endif
-			return;
-		}
-	}
-	else
-	{
-		if (status != SIXDOF_STATUS_MIDDLE)
-		{
-#if IS_USE_MESSAGEBOX
-			MessageBox(_T(SIXDOF_NOT_MIDDLE_MESSAGE));
-#endif
-			return;
-		}
-	}*/
-	sendStatus = CONTROL_COMMAND_MIDDLE;
-	status = SIXDOF_STATUS_READY;	
 }
 
 void CECATSampleDlg::OnBnClickedBtnStart()
@@ -1401,18 +1372,6 @@ void CECATSampleDlg::OnCommandStopme()
 	}
 	closeDataThread = true;
 	status = SIXDOF_STATUS_READY;
-	ResetDefaultData(&data);
-}
-
-void CECATSampleDlg::OnBnClickedBtnStopme()
-{
-	sendStatus = CONTROL_COMMAND_STOP;
-	stopSCurve = true;
-	closeDataThread = true;
-	if (status == SIXDOF_STATUS_RUN)
-	{
-		status = SIXDOF_STATUS_READY;
-	}
 	ResetDefaultData(&data);
 }
 
@@ -1471,21 +1430,6 @@ void CECATSampleDlg::OnBnClickedOk()
 {
 	CloseThread();
 	CDialog::OnOK();
-}
-
-void CECATSampleDlg::OnBnClickedBtnConnect()
-{
-
-}
-
-void CECATSampleDlg::OnBnClickedBtnDisconnect()
-{
-
-}
-
-void CECATSampleDlg::OnBnClickedBtnResetme()
-{
-
 }
 
 void CECATSampleDlg::OnBnClickedBtnSingleUp()
@@ -1876,21 +1820,39 @@ void CECATSampleDlg::OnBnClickedButtonData()
 	isStart = true;	
 }
 
-//使能开
-void CECATSampleDlg::OnBnClickedBtnEnableOn()
+// 暂停/恢复
+void CECATSampleDlg::OnBnClickedBtnStopme()
+{
+	
+}
+
+// 回原点
+void CECATSampleDlg::OnBnClickedBtnMiddle()
+{
+	sendStatus = CONTROL_COMMAND_MIDDLE;
+	status = SIXDOF_STATUS_READY;	
+}
+
+// 使能开
+void CECATSampleDlg::OnBnClickedBtnConnect()
 {
 	sendStatus = CONTROL_COMMAND_ENABLE_ON;
 }
 
-//使能关 
-void CECATSampleDlg::OnBnClickedBtnEnableOff()
-	
-{ 
-	
+// 使能关
+void CECATSampleDlg::OnBnClickedBtnDisconnect()
+{
 	sendStatus = CONTROL_COMMAND_ENABLE_OFF;
 }
-//平台复位 
-void CECATSampleDlg::OnBnClickedBtnResetPlat()
+
+// 跳出上限位
+void CECATSampleDlg::OnChkSvon() 
+{
+
+}
+
+// 平台复位
+void CECATSampleDlg::OnBnClickedBtnResetme()
 {
 	sendStatus = CONTROL_COMMAND_RESETPLAT;
 }

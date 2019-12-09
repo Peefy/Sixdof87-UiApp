@@ -46,10 +46,6 @@
 
 #define IDC_STATIC_TEST_SHOW_TEXT      "测试(位移单位:1mm, 角度单位:1°, 频率单位:1Hz, 相位单位:1°)"
 #define IDC_BUTTON_TEST_SHOW_TEXT      "运行测试"
-#define IDC_BTN_Pause_SHOW_TEXT      "暂停/恢复"
-#define IDC_BTN_EnableOn_SHOW_TEXT      "使能开"
-#define IDC_BTN_EnableOff_SHOW_TEXT      "使能关"
-#define IDC_BTN_ResetPlat_SHOW_TEXT      "平台复位"
 
 #define CORPORATION_NAME "北京市星光凯明动感仿真模拟器中心"
 
@@ -94,4 +90,12 @@
 #define IDC_BUTTON_PROCESSING_SHOW_TEXT  "路谱处理"
 #define IDC_BUTTON_REPRODUCE_SHOW_TEXT   "路谱复现"
 #define IDC_BUTTON_DATA_SHOW_TEXT        "数据回放"
+
+#define IDC_BTN_Middle_SHOW_TEXT       "回原点"
+#define IDC_BTN_StopMe_SHOW_TEXT        "暂停/恢复"
+#define IDC_BTN_CONNECT_SHOW_TEXT     "使能开"
+#define IDC_BTN_DISCONNECT_SHOW_TEXT     "使能关"
+#define IDC_CHK_SVON_SHOW_TEXT    "跳出上限位"
+#define IDC_BTN_Resetme_SHOW_TEXT    "平台复位"
+
 #endif

@@ -104,9 +104,6 @@ public:
 	afx_msg void OnBnClickedButtonProcessing();
 	afx_msg void OnBnClickedButtonReproduce();
 	afx_msg void OnBnClickedButtonData();
-	afx_msg void OnBnClickedBtnEnableOn();
-	afx_msg void OnBnClickedBtnEnableOff();
-	afx_msg void OnBnClickedBtnResetPlat();
 };
 
 
