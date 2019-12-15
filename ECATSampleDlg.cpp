@@ -6,8 +6,6 @@
 #include <math.h>
 #include <time.h>
 #include <fstream>
-#include <deque>
-#include <queue>
 
 #include "DialogRegister.h"
 #include "DIALOGLogin.h"
@@ -196,13 +194,15 @@ CRITICAL_SECTION ctrlCommandLockobj;
 // 路谱数据总数
 int roaddatacount = 0;
 int roaddataindex = 0;
+// 平台当前的返回值
+Signal::RoadSpectrumData roadshowdata;
 // 路谱数据
 Signal::RoadSpectrumData roaddata;
 // 路谱数据序列
 Signal::RoadSpectrum roadSpectrum;
 // 控制PLC,注意PLC地址+1
 PLCDataAdapter plcData;
-//SixdofModbus::ModbusDataAdapter modbusdata;
+SixdofModbus::ModbusDataAdapter modbusdata;
 // 控制PLC六自由度平台的控制指令
 ControlCommandEnum sendStatus = CONTROL_COMMAND_NONE;
 // 读取PLC六自由度平台的状态
@@ -217,6 +217,13 @@ DWORD WINAPI DataTransThread(LPVOID pParam)
 
 		SixdofControl();
 		plcData.SendData(sendStatus, roaddata, roaddatacount, roaddataindex);
+		modbusdata.ReadSixdofData(roadshowdata);
+		data.X = (int16_t)(roadshowdata.Position.X * 10);
+		data.Y = (int16_t)(roadshowdata.Position.Y * 10);
+		data.Z = (int16_t)(roadshowdata.Position.Z * 10);
+		data.Roll = (int16_t)(roadshowdata.Position.Roll * 100);
+		data.Pitch = (int16_t)(roadshowdata.Position.Pitch * 100);
+		data.Yaw = (int16_t)(roadshowdata.Position.Yaw * 100);
 
 		DWORD end_time = GetTickCount();
 		runTime = end_time - start_time;		
@@ -1831,18 +1838,28 @@ void CECATSampleDlg::OnBnClickedBtnMiddle()
 {
 	sendStatus = CONTROL_COMMAND_MIDDLE;
 	status = SIXDOF_STATUS_READY;	
+	if (modbusdata.IsConnect == false)
+	{
+		MessageBox(L"modbus error");
+	}
+	if (modbusdata.WriteGotoHome() != 1) 
+	{
+		MessageBox(L"modbus error");
+	}
 }
 
 // 使能开
 void CECATSampleDlg::OnBnClickedBtnConnect()
 {
 	sendStatus = CONTROL_COMMAND_ENABLE_ON;
+	modbusdata.SetPlatformEnable(true);
 }
 
 // 使能关
 void CECATSampleDlg::OnBnClickedBtnDisconnect()
 {
 	sendStatus = CONTROL_COMMAND_ENABLE_OFF;
+	modbusdata.SetPlatformEnable(false);
 }
 
 // 跳出上限位

@@ -4,9 +4,10 @@
 
 namespace SixdofModbus
 {
-	#define BUFFER_MAX_COUNT 200
+	#define BUFFER_MAX_COUNT 1024
 
-	static uint16_t dataBuffers[BUFFER_MAX_COUNT];
+	static uint16_t dataBuffers[BUFFER_MAX_COUNT] = {0};
+	static uint8_t bitsBuffers[BUFFER_MAX_COUNT] = {0};
 
 	static inline int16_t ExchangeInt16Bit(int16_t data)
 	{
@@ -50,6 +51,7 @@ namespace SixdofModbus
 			modbus_free(modbus);
 			return;
 		}
+		IsConnect = true;
 		modbus_set_slave(modbus, MODBUS_SLAVE_ID);
 	}
 
@@ -172,8 +174,45 @@ namespace SixdofModbus
 
 	ModbusDataAdapter::~ModbusDataAdapter()
 	{
-		modbus_close(modbus);
-		modbus_free(modbus);
+		if (modbus != nullptr) {
+			modbus_close(modbus);
+			modbus_free(modbus);
+		}
+	}
+
+	void ModbusDataAdapter::SetMotorEnable()
+	{
+		//modbus_write_bits(modbus, )
+	}
+
+	int ModbusDataAdapter::SetPlatformEnable(bool isEnable) 
+	{
+		if (IsConnect == false)
+			return -1;
+		bitsBuffers[0] = (uint8_t)isEnable;
+		auto error = modbus_write_bits(modbus, ENABLE_PLATFORM_MODBUS_ADDRESS, 1, bitsBuffers);
+		return error;
+		// modbus_write_bits(modbus, ENABLE_PLAT_MODBUS_ADDRESS, 1, &bitsBuffers[0]);
+	}
+
+	int ModbusDataAdapter::ReadSixdofData(RoadSpectrumData& roaddata) 
+	{
+		if (IsConnect == false)
+			return -1;
+		auto error = modbus_read_registers(modbus, ENABLE_PLATFORM_MODBUS_ADDRESS, SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT, dataBuffers);
+		roaddata.Position.X = static_cast<double>(dataBuffers[0]);
+		roaddata.Position.Y = static_cast<double>(dataBuffers[1]);
+		roaddata.Position.Z = static_cast<double>(dataBuffers[2]);
+		roaddata.Position.Roll = static_cast<double>(dataBuffers[3]);
+		roaddata.Position.Pitch = static_cast<double>(dataBuffers[4]);
+		roaddata.Position.Yaw = static_cast<double>(dataBuffers[5]);
+		return error;
+	}
+
+
+	int ModbusDataAdapter::WriteGotoHome()
+	{
+		return -1;
 	}
 
 }

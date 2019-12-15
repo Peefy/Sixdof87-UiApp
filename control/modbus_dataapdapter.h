@@ -17,7 +17,7 @@ namespace SixdofModbus
 {
 
 #define MODBUS_SLAVE_PORT         9000
-#define MODBUS_SLAVE_IP_STRING   "192.168.0.123"//"127.0.0.1" 
+#define MODBUS_SLAVE_IP_STRING    "192.168.0.123"   //"127.0.0.1" 
 
 #define MODBUS_MASTER_PORT        502
 #define MODBUS_MASTER_IP_STRING   "192.168.0.22"
@@ -36,6 +36,8 @@ namespace SixdofModbus
 #define SIXDOF_SINE_DATA_MODBUS_ADDRESS        (10025 - IS_PLC_COMM)
 #define SIXDOF_SINE_DATA_MODBUS_REG_COUNT      (18)
 
+#define STATUS_PLATFORM_MODBUS_ADDRESS         (1001 - IS_PLC_COMM)
+#define ENABLE_PLATFORM_MODBUS_ADDRESS         (1002 - IS_PLC_COMM)
 #define ENABLE_PLATFORM_MODBUS_ADDRESS         (1004 - IS_PLC_COMM)
 
 #define ENABLE_PLAT_MODBUS_ADDRESS             (1001 - IS_PLC_COMM)
@@ -51,7 +53,7 @@ namespace SixdofModbus
 #define SINE_PAUSE_PLATFORM_MODBUS_ADDRESS     (1019 - IS_PLC_COMM)
 #define IS_PLAT_INIT_PLATFORM_MODBUS_ADDRESS   (1020 - IS_PLC_COMM)
 
-#define SIXDOF_ACTIVE_AXIS_MODBUS_ADDRESS      (1033 - IS_PLC_COMM)
+#define SIXDOF_ACTIVE_AXIS_MODBUS_ADDRESS      (10033 - IS_PLC_COMM)
 #define SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT    (6)
 
 #define ENABLE_ROAD_DATA_MODBUS_ADDRESS        (1060 - IS_PLC_COMM)
@@ -71,7 +73,18 @@ protected:
 private:
 	void DataInit();	
 	void ModbusInit();
+public:
+	int SetPlatformEnable(bool isEnable);
+	int ReadSixdofData(RoadSpectrumData& roaddata);
+
+	int WriteResetError();
+	int WriteEmergencyStop();
+	int WriteMoveToInit();
+	int WriteMoveToMin();
+	int WriteGotoHome();
+	
 protected:
+	void SetMotorEnable();
 	void SetIsEnableRoadData(bool isEnable);
 	void SetRoadData(RoadSpectrumData& roaddata);
 	void SetPlatformStatus(ControlCommandEnum& command);
