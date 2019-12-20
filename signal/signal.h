@@ -51,6 +51,16 @@ namespace Signal
 			Pitch = pitch;
 		}
 
+		SixdofData(double* vals)
+		{
+			X = vals[0];
+			Y = vals[1];
+			Z = vals[2];
+			Yaw = vals[3];
+			Roll = vals[4];
+			Pitch = vals[5];
+		}
+
 		SixdofData operator+ (SixdofData& right)
 		{
 			return SixdofData(X + right.X,  

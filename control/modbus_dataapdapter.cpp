@@ -25,8 +25,8 @@ namespace SixdofModbus
 	{
 		static uint8_t b[4] = {0};
 		memmove(b, &val, sizeof(uint8_t) * 4);
-		memmove(regs + index, b, sizeof(uint16_t) * 1);
-		memmove(regs + index + 1, b + 2, sizeof(uint16_t) * 1);
+		memmove(regs + index + 1, b, sizeof(uint16_t) * 1);
+		memmove(regs + index, b + 2, sizeof(uint16_t) * 1);
 	}
 
 	static void ModbusSetRegToFloat32(uint16_t * regs, int index, float* val)
@@ -192,7 +192,6 @@ namespace SixdofModbus
 		bitsBuffers[0] = (uint8_t)isEnable;
 		auto error = modbus_write_bits(modbus, ENABLE_PLATFORM_MODBUS_ADDRESS, 1, bitsBuffers);
 		return error;
-		// modbus_write_bits(modbus, ENABLE_PLAT_MODBUS_ADDRESS, 1, &bitsBuffers[0]);
 	}
 
 	int ModbusDataAdapter::ReadSixdofData(RoadSpectrumData& roaddata) 
@@ -210,9 +209,52 @@ namespace SixdofModbus
 	}
 
 
+	int ModbusDataAdapter::WriteResetError()
+	{
+		if (IsConnect == false)
+			return -1;
+		bitsBuffers[0] = (uint8_t)1;
+		auto error = modbus_write_bits(modbus, RESET_ERROR_MODBUS_ADDRESS, 1, bitsBuffers);
+		return error;
+	}
+
 	int ModbusDataAdapter::WriteGotoHome()
 	{
 		return -1;
 	}
 
+	int ModbusDataAdapter::WriteSixdofSetData(SixdofData& am, SixdofData& feq, SixdofData& phase)
+	{
+		if (modbus == nullptr || IsConnect == false)
+			return -1;
+		int i = 0;
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(am.X * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(am.Y * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(am.Z * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(am.Roll * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(am.Pitch * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(am.Yaw * 1000));
+
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(feq.X * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(feq.Y * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(feq.Z * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(feq.Roll * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(feq.Pitch * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(feq.Yaw * 1000));
+
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(phase.X * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(phase.Y * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(phase.Z * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(phase.Roll * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(phase.Pitch * 1000));
+		MODBUS_SET_INT32_TO_INT16(dataBuffers, (i++) * 2, static_cast<int32_t>(phase.Yaw * 1000));
+
+		modbus_write_registers(modbus, 
+			SIXDOF_SET_DATA_MODBUS_ADDRESS, SIXDOF_SET_DATA_MODBUS_REG_COUNT * 2, dataBuffers);
+	}
+
+	int ModbusDataAdapter::WriteSixdofSetData(double * am, double * feq, double * phase) 
+	{
+		return WriteSixdofSetData(SixdofData(am), SixdofData(feq), SixdofData(phase));
+	}
 }

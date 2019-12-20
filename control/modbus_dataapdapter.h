@@ -53,8 +53,8 @@ namespace SixdofModbus
 #define SINE_PAUSE_PLATFORM_MODBUS_ADDRESS     (1019 - IS_PLC_COMM)
 #define IS_PLAT_INIT_PLATFORM_MODBUS_ADDRESS   (1020 - IS_PLC_COMM)
 
-#define SIXDOF_ACTIVE_AXIS_MODBUS_ADDRESS      (10033 - IS_PLC_COMM)
-#define SIXDOF_ACTIVE_AXIS_MODBUS_REG_COUNT    (6)
+#define SIXDOF_SET_DATA_MODBUS_ADDRESS         (10025 - IS_PLC_COMM)
+#define SIXDOF_SET_DATA_MODBUS_REG_COUNT       (12)
 
 #define ENABLE_ROAD_DATA_MODBUS_ADDRESS        (1060 - IS_PLC_COMM)
 #define SIXDOF_ROAD_DATA_MODBUS_ADDRESS        (10101 - IS_PLC_COMM)
@@ -76,6 +76,8 @@ private:
 public:
 	int SetPlatformEnable(bool isEnable);
 	int ReadSixdofData(RoadSpectrumData& roaddata);
+	int WriteSixdofSetData(SixdofData& am, SixdofData& feq, SixdofData& phase);
+	int WriteSixdofSetData(double * am, double * feq, double * phase);
 
 	int WriteResetError();
 	int WriteEmergencyStop();
